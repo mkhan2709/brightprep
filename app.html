@@ -817,8 +817,8 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
 <script>
 // ─── CONFIG ───────────────────────────────────────
 // 🔧 Replace these with your actual keys after setup
-const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const SUPABASE_URL = 'https://thzkhrzyiewfeyukaktp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_fRTiZeqdL9chTGBdwWVFGw_fkzXAs1M';
 
 // Coupon codes handled client-side for UX preview
 // Real validation happens server-side via Stripe
@@ -831,15 +831,15 @@ const VALID_COUPONS = {
 };
 
 // ─── SUPABASE CLIENT ──────────────────────────────
-let supabase = null;
+let sbClient = null;
 let currentUser = null;
 let isPro = false;
 
 // initSupabase and session handling moved to BOOT section below
 
 async function loadProfile() {
-  if (!supabase || !currentUser) return;
-  const { data } = await supabase
+  if (!sbClient || !currentUser) return;
+  const { data } = await sbClient
     .from('profiles')
     .select('name, is_pro, plan')
     .eq('id', currentUser.id)
@@ -873,10 +873,10 @@ async function signIn() {
   const spinner = document.getElementById('siSpinner');
 
   if (!email || !pass) { showErr(errEl, 'Please fill in all fields.'); return; }
-  if (!supabase) { showDemoApp(); return; } // Demo mode
+  if (!sbClient) { showDemoApp(); return; } // Demo mode
 
   spinner.classList.remove('hidden');
-  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  const { error } = await sbClient.auth.signInWithPassword({ email, password: pass });
   spinner.classList.add('hidden');
 
   if (error) showErr(errEl, error.message);
@@ -894,11 +894,11 @@ async function signUp() {
 
   if (!name || !email || !pass) { showErr(errEl, 'Please fill in all required fields.'); return; }
   if (pass.length < 8) { showErr(errEl, 'Password must be at least 8 characters.'); return; }
-  if (!supabase) { showDemoApp(); return; }
+  if (!sbClient) { showDemoApp(); return; }
 
   spinner.classList.remove('hidden');
 
-  const { data, error } = await supabase.auth.signUp({
+  const { data, error } = await sbClient.auth.signUp({
     email, password: pass,
     options: {
       data: { name, year_group: year, coupon_code: coupon },
@@ -912,7 +912,7 @@ async function signUp() {
 
   // Create profile row
   if (data?.user) {
-    await supabase.from('profiles').upsert({
+    await sbClient.from('profiles').upsert({
       id: data.user.id, name, year_group: year,
       is_pro: false, plan: 'free',
       coupon_used: coupon || null,
@@ -926,8 +926,8 @@ async function signUp() {
 }
 
 async function signInGoogle() {
-  if (!supabase) { showDemoApp(); return; }
-  await supabase.auth.signInWithOAuth({
+  if (!sbClient) { showDemoApp(); return; }
+  await sbClient.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: window.location.origin }
   });
@@ -938,8 +938,8 @@ async function forgotPassword() {
   const errEl = document.getElementById('fpError');
   const sucEl = document.getElementById('fpSuccess');
   if (!email) { showErr(errEl, 'Please enter your email.'); return; }
-  if (!supabase) return;
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+  if (!sbClient) return;
+  const { error } = await sbClient.auth.resetPasswordForEmail(email, {
     redirectTo: window.location.origin + '/reset-password.html',
   });
   if (error) showErr(errEl, error.message);
@@ -951,7 +951,7 @@ async function forgotPassword() {
 }
 
 async function signOut() {
-  if (supabase) await supabase.auth.signOut();
+  if (sbClient) await sbClient.auth.signOut();
   currentUser = null; isPro = false;
   showAuthScreen();
 }
@@ -1396,7 +1396,7 @@ if (_urlCoupon) {
 
 // Successful Stripe payment redirect
 if (_urlParams.get('session_id')) {
-  setTimeout(() => { if (supabase) loadProfile(); }, 2000);
+  setTimeout(() => { if (sbClient) loadProfile(); }, 2000);
 }
 
 function initSupabase() {
@@ -1406,9 +1406,9 @@ function initSupabase() {
     showDemoApp();
     return;
   }
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  supabase.auth.getSession().then(async ({ data: { session } }) => {
+  sbClient.auth.getSession().then(async ({ data: { session } }) => {
     if (session) {
       currentUser = session.user;
       await loadProfile();
@@ -1420,7 +1420,7 @@ function initSupabase() {
     }
   });
 
-  supabase.auth.onAuthStateChange(async (_event, session) => {
+  sbClient.auth.onAuthStateChange(async (_event, session) => {
     if (session) {
       currentUser = session.user;
       await loadProfile();
