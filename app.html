@@ -429,7 +429,7 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
       <button class="nav-btn" onclick="goPage('plan')"><span class="ni">📅</span>Revision Plan</button>
       <div class="nav-sec-label" style="margin-top:.5rem">Account</div>
       <button class="nav-btn" onclick="showUpgradeModal()"><span class="ni">⭐</span>Upgrade to Pro</button>
-      <button class="nav-btn" onclick="signOut()" style="color:rgba(255,100,100,0.7)"><span class="ni">↩</span>Sign out</button>
+      <button class="nav-btn" onclick="localStorage.clear();sessionStorage.clear();window.location.href='index.html'" style="color:rgba(255,150,150,0.8)"><span class="ni">↩</span>Sign out</button>
     </nav>
 
     <div class="pro-banner" id="proBanner">
@@ -454,7 +454,7 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
         <div class="user-name" id="userName">Student</div>
         <div class="user-plan" id="userPlan">Free plan</div>
       </div>
-      <button class="btn-signout" onclick="signOut()" title="Sign out" style="color:rgba(255,255,255,0.55);font-size:11px;font-weight:600;letter-spacing:.02em">Sign out</button>
+      <button onclick="localStorage.clear();sessionStorage.clear();window.location.href='index.html'" style="background:none;border:1px solid rgba(255,100,100,0.4);color:rgba(255,150,150,0.9);font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;cursor:pointer">Sign out</button>
     </div>
   </aside>
 
