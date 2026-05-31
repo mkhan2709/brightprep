@@ -1026,7 +1026,7 @@ if (!SUPABASE_URL.includes('YOUR_PROJECT')) {
     if (session) goToApp(session.user);
   });
   sb.auth.onAuthStateChange((event, session) => {
-    if (!authReady) return;
+    
     if (event === 'SIGNED_IN' && session) goToApp(session.user);
   });
 }
@@ -1035,7 +1035,7 @@ function goToApp(user) {
   // Pass coupon in URL so app.html can pick it up and apply at checkout
   const params = new URLSearchParams();
   if (activeCoupon) params.set('coupon', activeCoupon);
-  window.location.href = 'app.html' + (activeCoupon ? '?' + params.toString() : '');
+  window.location.href = 'app.html';
 }
 
 // ── AUTH ACTIONS ─────────────────────────────────────
@@ -1224,3 +1224,4 @@ checkUrlCoupon();
 </script>
 </body>
 </html>
+ 
