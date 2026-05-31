@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BrightPrep · British Curriculum Exam Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<!-- Supabase auth SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+/* ── RESET & TOKENS ── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0A0F1E;--ink2:#1C2340;--ink3:#2E3A5C;
+  --gold:#F5A500;--gold2:#E09400;--goldfade:rgba(245,165,0,0.12);
+  --teal:#00A67E;--tealfade:rgba(0,166,126,0.12);
+  --cream:#FDFAF4;--cream2:#F5F0E8;
+  --white:#FFFFFF;
+  --txt:#0A0F1E;--txt2:#3D4769;--txt3:#7A83A6;
+  --bdr:rgba(10,15,30,0.08);--bdr2:rgba(10,15,30,0.14);
+  --r:12px;--rlg:20px;--rxl:28px;
+  --font:'DM Sans',sans-serif;
+  --serif:'Fraunces',serif;
+  --sh:0 2px 12px rgba(10,15,30,0.08),0 8px 32px rgba(10,15,30,0.06);
+  --shd:0 8px 40px rgba(10,15,30,0.18),0 2px 8px rgba(10,15,30,0.1);
+}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font);color:var(--txt);background:var(--cream);overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 clamp(1rem,5vw,3rem);height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(253,250,244,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr)}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:1.25rem;color:var(--ink);font-weight:600}
+.logo-gem{width:36px;height:36px;background:var(--gold);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:17px;color:var(--ink)}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{font-size:14px;color:var(--txt2);font-weight:500;transition:color .15s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{background:var(--ink);color:var(--white)!important;padding:9px 22px;border-radius:var(--r);font-size:14px;font-weight:600!important;transition:background .15s!important}
+.nav-cta:hover{background:var(--ink2)!important}
+@media(max-width:640px){.nav-links{display:none}.nav-cta-mobile{display:block}}
+
+/* ── HERO ── */
+.hero{min-height:100vh;padding:68px 0 0;display:flex;flex-direction:column;background:var(--ink);position:relative;overflow:hidden}
+
+/* Grid texture */
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none}
+/* Gold glow top left */
+.hero::after{content:'';position:absolute;top:-200px;left:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(245,165,0,0.15) 0%,transparent 70%);pointer-events:none}
+/* Teal glow bottom right */
+.hero-glow2{position:absolute;bottom:-150px;right:-100px;width:600px;height:600px;background:radial-gradient(circle,rgba(0,166,126,0.12) 0%,transparent 70%);pointer-events:none;z-index:0}
+
+.hero-inner{max-width:1160px;margin:0 auto;padding:5rem clamp(1.5rem,5vw,3rem) 0;position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center}
+
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--goldfade);border:1px solid rgba(245,165,0,0.3);color:var(--gold);padding:7px 18px;border-radius:30px;font-size:13px;font-weight:600;margin-bottom:2rem;letter-spacing:.02em;animation:fadeUp .6s ease both}
+.hero-badge::before{content:'🇬🇧';font-size:14px}
+
+.hero h1{font-family:var(--serif);font-size:clamp(2.8rem,6vw,5rem);color:var(--white);line-height:1.1;max-width:800px;margin:0 auto 1.5rem;animation:fadeUp .7s .1s ease both}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero h1 span{position:relative;display:inline-block}
+.hero h1 span::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:3px;background:var(--teal);border-radius:2px}
+
+.hero-sub{font-size:clamp(1rem,2vw,1.2rem);color:rgba(255,255,255,0.6);max-width:540px;margin:0 auto 2.5rem;line-height:1.75;animation:fadeUp .7s .2s ease both}
+
+/* FREE BANNER */
+.free-banner{display:inline-flex;align-items:center;gap:10px;background:rgba(0,166,126,0.15);border:1.5px solid rgba(0,166,126,0.4);border-radius:var(--rlg);padding:14px 24px;margin-bottom:2rem;animation:fadeUp .7s .25s ease both;max-width:520px}
+.fb-icon{font-size:24px;flex-shrink:0}
+.fb-text{text-align:left}
+.fb-text strong{display:block;font-size:15px;font-weight:700;color:var(--white);margin-bottom:2px}
+.fb-text span{font-size:13px;color:rgba(255,255,255,0.6)}
+.fb-code{background:rgba(0,166,126,0.25);border:1px solid rgba(0,166,126,0.5);color:#5EFFD3;font-family:monospace;font-size:14px;font-weight:700;padding:4px 12px;border-radius:8px;letter-spacing:.1em;margin-left:auto;flex-shrink:0}
+
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;animation:fadeUp .7s .3s ease both;margin-bottom:4rem}
+.btn-hero-primary{background:var(--gold);color:var(--ink);border:none;padding:15px 34px;border-radius:var(--rlg);font-size:16px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s;box-shadow:0 4px 24px rgba(245,165,0,0.4)}
+.btn-hero-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 8px 32px rgba(245,165,0,0.5)}
+.btn-hero-ghost{background:rgba(255,255,255,0.08);color:var(--white);border:1px solid rgba(255,255,255,0.2);padding:15px 32px;border-radius:var(--rlg);font-size:16px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .2s}
+.btn-hero-ghost:hover{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.35)}
+
+/* FLOATING STATS */
+.hero-stats{display:flex;gap:clamp(1.5rem,4vw,3.5rem);justify-content:center;padding-bottom:3rem;animation:fadeUp .7s .4s ease both}
+.hstat{text-align:center}
+.hstat .v{font-family:var(--serif);font-size:2rem;font-weight:700;color:var(--white);line-height:1}
+.hstat .l{font-size:12px;color:rgba(255,255,255,0.45);margin-top:4px;text-transform:uppercase;letter-spacing:.06em}
+.hstat-divider{width:1px;background:rgba(255,255,255,0.1);align-self:stretch;margin:4px 0}
+
+/* ── APP MOCKUP ── */
+.mockup-wrap{width:100%;background:linear-gradient(to bottom,var(--ink) 0%,var(--ink2) 100%);padding:0 clamp(1rem,4vw,3rem);position:relative;z-index:1}
+.mockup-frame{max-width:1000px;margin:0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:var(--rxl) var(--rxl) 0 0;overflow:hidden;box-shadow:0 -8px 60px rgba(0,0,0,0.4);animation:riseUp .9s .5s ease both}
+
+/* Browser chrome */
+.browser-bar{background:#1A1F35;padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.browser-dots{display:flex;gap:6px}
+.browser-dots span{width:12px;height:12px;border-radius:50%}
+.browser-dots span:nth-child(1){background:#FF5F57}
+.browser-dots span:nth-child(2){background:#FEBC2E}
+.browser-dots span:nth-child(3){background:#28C840}
+.browser-url{flex:1;background:rgba(255,255,255,0.07);border-radius:8px;padding:5px 12px;font-size:12px;color:rgba(255,255,255,0.4);text-align:center;max-width:320px;margin:0 auto}
+
+/* App UI inside mockup */
+.app-preview{display:grid;grid-template-columns:220px 1fr;height:540px;font-family:var(--font);font-size:13px}
+@media(max-width:700px){.app-preview{grid-template-columns:1fr;height:auto}}
+
+/* Sidebar mock */
+.mp-sidebar{background:#0A1628;padding:0;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,0.06)}
+.mp-sb-logo{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:9px}
+.mp-sb-icon{width:30px;height:30px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#0A1628}
+.mp-sb-text{font-size:13px;font-weight:700;color:#fff}
+.mp-sb-sub{font-size:10px;color:rgba(255,255,255,0.35)}
+.mp-nav-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:12px;color:rgba(255,255,255,0.55);border-left:2px solid transparent}
+.mp-nav-item.active{color:#fff;background:rgba(255,255,255,0.07);border-left-color:var(--gold)}
+.mp-nav-item .icon{font-size:14px;width:18px;text-align:center}
+.mp-stage{margin:8px;padding:10px;background:rgba(255,255,255,0.05);border-radius:8px;font-size:11px}
+.mp-stage .lbl{color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:.06em;font-size:9px;margin-bottom:4px}
+.mp-stage select{background:transparent;border:none;color:rgba(255,255,255,0.7);font-size:11px;width:100%;outline:none}
+.mp-user{display:flex;align-items:center;gap:8px;padding:12px 14px;margin-top:auto;border-top:1px solid rgba(255,255,255,0.06)}
+.mp-av{width:28px;height:28px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.mp-user-txt .name{font-size:12px;font-weight:600;color:#fff}
+.mp-user-txt .plan{font-size:10px;color:rgba(255,255,255,0.35)}
+
+/* Main mock content */
+.mp-main{background:#F7F8FA;overflow:hidden;display:flex;flex-direction:column}
+.mp-topbar{background:#fff;border-bottom:1px solid rgba(0,0,0,0.06);padding:10px 16px;display:flex;align-items:center;justify-content:space-between}
+.mp-topbar-title{font-size:13px;font-weight:600;color:#0A0F1E}
+.mp-chips{display:flex;gap:6px}
+.mp-chip{padding:3px 10px;border-radius:12px;font-size:10px;font-weight:600}
+.mp-chip.amber{background:#FFFBEB;color:#92400E;border:1px solid rgba(245,158,11,.2)}
+.mp-chip.purple{background:#F0ECFC;color:#4C1D95;border:1px solid rgba(108,79,212,.2)}
+
+.mp-content{padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;overflow:hidden;flex:1}
+
+/* KPI cards in mock */
+.mp-kpi-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mp-kpi{background:#fff;border-radius:10px;padding:10px 12px;border:1px solid rgba(0,0,0,0.06)}
+.mp-kpi .icon{font-size:16px;margin-bottom:4px}
+.mp-kpi .val{font-size:16px;font-weight:700;color:#0A0F1E;line-height:1}
+.mp-kpi .lbl{font-size:9px;color:#9CA3AF;text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+
+/* Question card in mock */
+.mp-q-card{background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(0,0,0,0.06);display:flex;flex-direction:column;gap:8px}
+.mp-q-tags{display:flex;gap:5px}
+.mp-qtag{font-size:9px;padding:2px 7px;border-radius:5px;font-weight:600}
+.mp-qtag.green{background:#E1F5EE;color:#085041}
+.mp-qtag.blue{background:#EBF4FF;color:#1558B0}
+.mp-qtag.amber{background:#FFFBEB;color:#92400E}
+.mp-q-text{font-size:12px;color:#111827;line-height:1.6;font-weight:500}
+.mp-opts{display:flex;flex-direction:column;gap:5px}
+.mp-opt{display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:7px;border:1.5px solid rgba(0,0,0,0.08);font-size:11px;color:#4B5563}
+.mp-opt.sel{border-color:#00A67E;background:rgba(0,166,126,0.07);color:#007A5E}
+.mp-opt.corr{border-color:#38A169;background:#F0FFF4;color:#276749}
+.mp-opt-key{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+.mp-feedback{background:#F0FFF4;border:1px solid rgba(56,161,105,.25);border-radius:8px;padding:8px 10px;font-size:10px;color:#276749;line-height:1.5}
+
+/* Progress card in mock */
+.mp-prog-card{background:#fff;border-radius:12px;padding:14px;border:1px solid rgba(0,0,0,0.06)}
+.mp-prog-title{font-size:11px;font-weight:700;color:#0A0F1E;margin-bottom:10px}
+.mp-skill{display:flex;align-items:center;gap:7px;margin-bottom:7px}
+.mp-skill-name{font-size:10px;color:#4B5563;width:90px;flex-shrink:0}
+.mp-skill-track{flex:1;height:5px;background:#EEF0F4;border-radius:10px;overflow:hidden}
+.mp-skill-fill{height:100%;border-radius:10px}
+.mp-skill-pct{font-size:10px;font-weight:700;width:28px;text-align:right}
+
+.mp-ai-card{background:linear-gradient(135deg,#0A1628,#1C2340);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:7px}
+.mp-ai-title{font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.mp-ai-msg{padding:8px 10px;border-radius:7px;font-size:10px;line-height:1.55}
+.mp-ai-msg.ai{background:rgba(255,255,255,.07);color:rgba(255,255,255,.75)}
+.mp-ai-msg.you{background:rgba(0,166,126,.15);color:#5EFFD3;text-align:right}
+
+/* ── SECTIONS ── */
+section{padding:clamp(4rem,8vw,7rem) clamp(1.5rem,5vw,3rem)}
+.section-inner{max-width:1160px;margin:0 auto}
+
+.section-tag{display:inline-block;background:var(--goldfade);border:1px solid rgba(245,165,0,0.25);color:var(--gold2);font-size:12px;font-weight:700;padding:5px 14px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;margin-bottom:1rem}
+.section-h{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);color:var(--ink);line-height:1.2;margin-bottom:1rem}
+.section-h em{font-style:italic;color:var(--ink3)}
+.section-sub{font-size:1.05rem;color:var(--txt2);line-height:1.75;max-width:560px}
+
+/* ── FEATURES BENTO ── */
+.bento{background:var(--ink);padding:clamp(4rem,8vw,7rem) clamp(1.5rem,5vw,3rem)}
+.bento-grid{max-width:1160px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto;gap:16px}
+
+.bento-card{border-radius:var(--rlg);padding:2rem;position:relative;overflow:hidden}
+.bento-card.span2{grid-column:span 2}
+.bento-card.dark{background:#131929;border:1px solid rgba(255,255,255,0.07)}
+.bento-card.gold{background:linear-gradient(135deg,#2A1F00,#1A1200);border:1px solid rgba(245,165,0,0.2)}
+.bento-card.teal{background:linear-gradient(135deg,#001A14,#000D0A);border:1px solid rgba(0,166,126,0.2)}
+.bento-card.light{background:var(--cream);border:1px solid var(--bdr)}
+.bento-card h3{font-family:var(--serif);font-size:1.4rem;font-weight:600;margin-bottom:.6rem}
+.bento-card.dark h3,.bento-card.gold h3,.bento-card.teal h3{color:#fff}
+.bento-card.light h3{color:var(--ink)}
+.bento-card p{font-size:14px;line-height:1.7}
+.bento-card.dark p,.bento-card.gold p,.bento-card.teal p{color:rgba(255,255,255,0.55)}
+.bento-card.light p{color:var(--txt2)}
+.bento-icon{font-size:2rem;margin-bottom:1rem}
+.bento-tag{display:inline-block;font-size:10px;font-weight:700;padding:3px 10px;border-radius:8px;letter-spacing:.04em;margin-bottom:.75rem}
+.bento-tag.gold{background:rgba(245,165,0,0.2);color:var(--gold)}
+.bento-tag.teal{background:rgba(0,166,126,0.2);color:#5EFFD3}
+.bento-tag.blue{background:rgba(43,127,224,0.2);color:#90C4FF}
+
+/* Mini progress viz inside bento */
+.bento-viz{margin-top:1.5rem}
+.bv-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bv-label{font-size:12px;color:rgba(255,255,255,0.5);width:100px;flex-shrink:0}
+.bv-track{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:10px;overflow:hidden}
+.bv-fill{height:100%;border-radius:10px;transition:width 1s ease}
+.bv-pct{font-size:11px;font-weight:700;width:32px;text-align:right}
+
+/* Mini question viz in bento */
+.bento-q{background:rgba(255,255,255,0.05);border-radius:10px;padding:14px;margin-top:1.5rem}
+.bq-text{font-size:13px;color:rgba(255,255,255,0.8);margin-bottom:10px;font-weight:500}
+.bq-opts{display:flex;flex-direction:column;gap:6px}
+.bq-opt{display:flex;align-items:center;gap:8px;padding:7px 12px;border-radius:8px;font-size:12px;border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.6)}
+.bq-opt.correct{border-color:rgba(0,166,126,0.5);background:rgba(0,166,126,0.12);color:#5EFFD3}
+.bq-key{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+
+/* ── CURRICULUM SECTION ── */
+.curr-section{background:var(--cream)}
+.stages-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:3rem}
+.stage-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rlg);padding:1.5rem;transition:all .2s;cursor:default}
+.stage-card:hover{box-shadow:var(--sh);transform:translateY(-3px)}
+.stage-card::before{content:'';display:block;width:40px;height:4px;border-radius:4px;margin-bottom:1rem}
+.stage-card:nth-child(1)::before{background:var(--teal)}
+.stage-card:nth-child(2)::before{background:#2B7FE0}
+.stage-card:nth-child(3)::before{background:var(--gold)}
+.stage-card:nth-child(4)::before{background:#6C4FD4}
+.stage-card h3{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:.3rem}
+.stage-card .years{font-size:12px;color:var(--txt3);margin-bottom:.85rem}
+.stage-subjects{display:flex;flex-wrap:wrap;gap:5px}
+.subj-pill{font-size:11px;padding:3px 10px;border-radius:8px;font-weight:500}
+.subj-pill.maths{background:#EBF4FF;color:#1558B0}
+.subj-pill.science{background:#E1F5EE;color:#085041}
+.subj-pill.english{background:#F0ECFC;color:#4C1D95}
+.subj-pill.verbal{background:#FFFBEB;color:#92400E}
+.subj-pill.nvr{background:#FEF0EC;color:#9C3514}
+
+/* ── COUPON SECTION ── */
+.coupon-section{background:linear-gradient(135deg,var(--ink) 0%,var(--ink2) 100%);position:relative;overflow:hidden}
+.coupon-section::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:48px 48px}
+.coupon-inner{position:relative;z-index:1;max-width:800px;margin:0 auto;text-align:center}
+.coupon-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,166,126,0.15);border:1.5px solid rgba(0,166,126,0.35);color:#5EFFD3;padding:8px 20px;border-radius:30px;font-size:13px;font-weight:700;margin-bottom:1.5rem;letter-spacing:.03em}
+.coupon-inner h2{font-family:var(--serif);font-size:clamp(2rem,4vw,3rem);color:#fff;margin-bottom:1rem;line-height:1.2}
+.coupon-inner p{font-size:1.05rem;color:rgba(255,255,255,0.6);margin-bottom:2.5rem;line-height:1.7}
+.coupon-box{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:var(--rlg);padding:2rem;max-width:480px;margin:0 auto 2rem;backdrop-filter:blur(10px)}
+.coupon-code-display{font-size:2rem;font-family:monospace;font-weight:700;color:var(--gold);letter-spacing:.2em;margin-bottom:.5rem}
+.coupon-desc{font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:1.25rem}
+.coupon-features{display:flex;flex-direction:column;gap:7px;margin-bottom:1.5rem;text-align:left}
+.coupon-feature{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.7)}
+.coupon-feature::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0}
+.btn-coupon-cta{width:100%;background:var(--teal);color:#fff;border:none;padding:15px;border-radius:var(--r);font-size:16px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s}
+.btn-coupon-cta:hover{background:#007A5E;transform:translateY(-1px)}
+
+/* Countdown clock */
+.countdown{display:flex;gap:1.25rem;justify-content:center;margin-top:1.5rem}
+.cd-item{text-align:center}
+.cd-val{font-size:1.6rem;font-weight:700;color:#fff;font-family:var(--serif);line-height:1;min-width:44px}
+.cd-lbl{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.cd-sep{font-size:1.6rem;color:rgba(255,255,255,0.25);align-self:flex-start;padding-top:2px}
+
+/* ── TESTIMONIALS ── */
+.testi-section{background:var(--cream)}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:3rem}
+.testi-card{background:var(--white);border:1px solid var(--bdr);border-radius:var(--rlg);padding:1.5rem;box-shadow:var(--sh)}
+.testi-stars{color:var(--gold);font-size:14px;margin-bottom:.75rem;letter-spacing:2px}
+.testi-quote{font-size:14px;color:var(--txt2);line-height:1.75;margin-bottom:1rem;font-style:italic}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.testi-name{font-size:13px;font-weight:700;color:var(--ink)}
+.testi-role{font-size:11px;color:var(--txt3)}
+
+/* ── PRICING ── */
+.pricing-section{background:var(--white)}
+.pricing-toggle{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:3rem}
+.ptoggle-label{font-size:14px;font-weight:500;color:var(--txt2)}
+.ptoggle-switch{width:48px;height:26px;background:var(--ink);border-radius:13px;position:relative;cursor:pointer;transition:background .2s}
+.ptoggle-switch::after{content:'';position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.ptoggle-switch.annual::after{transform:translateX(22px)}
+.ptoggle-switch.annual{background:var(--teal)}
+.save-badge{background:var(--tealfade);color:var(--teal);font-size:11px;font-weight:700;padding:2px 9px;border-radius:8px}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1000px;margin:0 auto}
+.price-card{border:1.5px solid var(--bdr);border-radius:var(--rlg);padding:2rem;transition:all .2s}
+.price-card.featured{border-color:var(--gold);background:var(--ink);color:#fff;transform:scale(1.03);box-shadow:var(--shd)}
+.price-card:hover:not(.featured){box-shadow:var(--sh);transform:translateY(-2px)}
+.pc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem}
+.price-card:not(.featured) .pc-label{color:var(--txt3)}
+.price-card.featured .pc-label{color:var(--gold)}
+.pc-popular{display:inline-block;background:var(--goldfade);border:1px solid rgba(245,165,0,0.3);color:var(--gold);font-size:10px;font-weight:700;padding:2px 10px;border-radius:8px;margin-left:8px}
+.pc-price{font-family:var(--serif);font-size:2.5rem;font-weight:700;line-height:1;margin-bottom:.3rem}
+.price-card:not(.featured) .pc-price{color:var(--ink)}
+.price-card.featured .pc-price{color:#fff}
+.pc-per{font-size:13px;font-weight:400}
+.price-card:not(.featured) .pc-per{color:var(--txt3)}
+.price-card.featured .pc-per{color:rgba(255,255,255,.55)}
+.pc-desc{font-size:13px;margin:.75rem 0 1.25rem;line-height:1.6}
+.price-card:not(.featured) .pc-desc{color:var(--txt2)}
+.price-card.featured .pc-desc{color:rgba(255,255,255,.6)}
+.pc-feats{list-style:none;margin-bottom:1.5rem}
+.pc-feats li{display:flex;align-items:flex-start;gap:8px;font-size:13px;padding:.4rem 0;border-bottom:1px solid}
+.pc-feats li:last-child{border-bottom:none}
+.price-card:not(.featured) .pc-feats li{color:var(--txt2);border-color:var(--bdr)}
+.price-card.featured .pc-feats li{color:rgba(255,255,255,.75);border-color:rgba(255,255,255,.08)}
+.pc-feats li::before{content:'✓';font-weight:700;flex-shrink:0}
+.price-card:not(.featured) .pc-feats li::before{color:var(--teal)}
+.price-card.featured .pc-feats li::before{color:var(--gold)}
+.pc-feats li.muted::before{content:'—';color:var(--txt3)!important}
+.price-card:not(.featured) .pc-feats li.muted{color:var(--txt3)}
+.btn-plan{width:100%;border:none;padding:13px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s}
+.price-card:not(.featured) .btn-plan{background:var(--ink);color:#fff}
+.price-card:not(.featured) .btn-plan:hover{background:var(--ink2)}
+.price-card.featured .btn-plan{background:var(--gold);color:var(--ink)}
+.price-card.featured .btn-plan:hover{background:var(--gold2)}
+
+/* ── CTA FOOTER ── */
+.cta-section{background:var(--ink);padding:clamp(4rem,7vw,6rem) clamp(1.5rem,5vw,3rem);text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(245,165,0,0.1) 0%,transparent 70%)}
+.cta-section h2{font-family:var(--serif);font-size:clamp(2rem,4vw,3.2rem);color:#fff;margin-bottom:1rem;position:relative}
+.cta-section p{font-size:1.05rem;color:rgba(255,255,255,0.55);margin-bottom:2rem;position:relative}
+
+/* Footer */
+footer{background:#070C18;padding:2.5rem clamp(1.5rem,5vw,3rem);border-top:1px solid rgba(255,255,255,0.06)}
+.footer-inner{max-width:1160px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.footer-logo{font-family:var(--serif);font-size:1.1rem;color:#fff;display:flex;align-items:center;gap:8px}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{font-size:13px;color:rgba(255,255,255,0.4);transition:color .15s}
+.footer-links a:hover{color:rgba(255,255,255,0.7)}
+.footer-copy{font-size:12px;color:rgba(255,255,255,0.25)}
+
+/* ── AUTH MODAL ── */
+.auth-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.7);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
+.auth-overlay.open{display:flex}
+.auth-modal{background:var(--white);border-radius:var(--rxl);width:100%;max-width:460px;box-shadow:0 24px 80px rgba(0,0,0,0.3);overflow:hidden;animation:modalIn .3s ease both;max-height:95vh;overflow-y:auto}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:none}}
+.am-header{background:var(--ink);padding:2rem 2rem 1.5rem;position:relative}
+.am-header-logo{display:flex;align-items:center;gap:9px;margin-bottom:1.25rem}
+.am-gem{width:32px;height:32px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--ink)}
+.am-header h2{font-family:var(--serif);font-size:1.5rem;color:#fff;margin-bottom:.3rem}
+.am-header p{font-size:13px;color:rgba(255,255,255,0.55)}
+.am-close{position:absolute;top:1rem;right:1rem;width:30px;height:30px;background:rgba(255,255,255,0.1);border:none;border-radius:50%;color:rgba(255,255,255,0.6);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.am-close:hover{background:rgba(255,255,255,0.18)}
+
+/* coupon banner in modal */
+.am-coupon-banner{background:rgba(0,166,126,0.12);border:1px solid rgba(0,166,126,0.3);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.am-coupon-icon{font-size:18px}
+.am-coupon-text strong{display:block;font-size:13px;color:#fff;font-weight:700}
+.am-coupon-text span{font-size:11px;color:rgba(255,255,255,0.55)}
+.am-coupon-code{background:rgba(0,166,126,0.25);border:1px solid rgba(0,166,126,0.4);color:#5EFFD3;font-family:monospace;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:.1em;margin-left:auto}
+
+.am-body{padding:1.75rem 2rem}
+.am-tabs{display:flex;border:1.5px solid var(--bdr2);border-radius:var(--r);overflow:hidden;margin-bottom:1.5rem}
+.am-tab{flex:1;padding:9px;font-size:14px;font-weight:600;border:none;background:var(--cream);color:var(--txt2);cursor:pointer;transition:all .15s;font-family:var(--font)}
+.am-tab.on{background:var(--ink);color:#fff}
+
+.am-form h3{font-size:1rem;font-weight:700;margin-bottom:.25rem;color:var(--ink)}
+.am-form .sub{font-size:13px;color:var(--txt2);margin-bottom:1.25rem}
+.field{margin-bottom:.9rem}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--txt3);margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.04em}
+.field input,.field select{width:100%;padding:11px 14px;border:1.5px solid var(--bdr2);border-radius:var(--r);font-size:14.5px;color:var(--txt);background:var(--white);font-family:var(--font);transition:border-color .15s}
+.field input:focus,.field select:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,166,126,0.1)}
+
+/* pre-applied coupon in form */
+.coupon-applied{background:#F0FFF4;border:1.5px solid #9AE6B4;border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:.9rem}
+.ca-code{font-family:monospace;font-weight:700;font-size:15px;color:#276749;letter-spacing:.1em}
+.ca-desc{font-size:12px;color:#38A169;flex:1}
+.ca-remove{background:none;border:none;color:#9AE6B4;font-size:12px;cursor:pointer}
+.ca-remove:hover{color:#276749}
+
+.or-divider{display:flex;align-items:center;gap:10px;margin:.9rem 0;color:var(--txt3);font-size:12px}
+.or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+.btn-form-primary{width:100%;background:var(--teal);color:#fff;border:none;padding:13px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s;margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-form-primary:hover{background:var(--teal2);transform:translateY(-1px)}
+.btn-form-primary:disabled{background:#ccc;cursor:default;transform:none}
+.btn-form-google{width:100%;background:var(--white);color:var(--txt);border:1.5px solid var(--bdr2);padding:11px;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-form-google:hover{border-color:var(--bdr3);background:var(--cream)}
+
+.am-error{background:#FFF5F5;border:1px solid #FEB2B2;color:#9B2C2C;padding:.7rem 1rem;border-radius:var(--r);font-size:13px;margin-bottom:.85rem;display:none}
+.am-error.on{display:block}
+.am-success{background:#F0FFF4;border:1px solid #9AE6B4;color:#276749;padding:.7rem 1rem;border-radius:var(--r);font-size:13px;margin-bottom:.85rem;display:none}
+.am-success.on{display:block}
+.am-note{text-align:center;font-size:12px;color:var(--txt3);margin-top:.5rem}
+.am-note a{color:var(--teal);font-weight:600}
+
+.spin{display:inline-block;width:16px;height:16px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes riseUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+.reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .bento-grid{grid-template-columns:1fr 1fr}
+  .bento-card.span2{grid-column:span 1}
+  .stages-row{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+  .price-card.featured{transform:none}
+}
+@media(max-width:600px){
+  .bento-grid{grid-template-columns:1fr}
+  .stages-row{grid-template-columns:1fr}
+  .app-preview{height:auto}
+  .mp-sidebar{display:none}
+  .mp-kpi-row{grid-template-columns:1fr 1fr}
+  .hero-stats{gap:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><div class="logo-gem">B</div>BrightPrep</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#curriculum">Curriculum</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#" class="nav-cta" onclick="openAuth('signup');return false">Start free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow2"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">British Curriculum · KS2 to A-Level</div>
+    <h1>Practise like it's the <em>real</em> <span>exam</span></h1>
+    <p class="hero-sub">500+ exam-style questions aligned to AQA, Edexcel and OCR — with AI-powered hints, worked solutions, and predicted grades across Maths, Science and more.</p>
+
+    <!-- FREE OFFER BANNER -->
+    <div class="free-banner">
+      <div class="fb-icon">🎁</div>
+      <div class="fb-text">
+        <strong>3 months completely free — limited offer</strong>
+        <span>Use code at signup. No card required. Cancel any time.</span>
+      </div>
+      <div class="fb-code">BRIGHT100</div>
+    </div>
+
+    <div class="hero-btns">
+      <button class="btn-hero-primary" onclick="openAuthWithCoupon()">Claim 3 months free →</button>
+      <button class="btn-hero-ghost" onclick="openAuth('signin')">Sign in</button>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hstat"><div class="v">500+</div><div class="l">Questions</div></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><div class="v">5</div><div class="l">Subjects</div></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><div class="v">KS2–A2</div><div class="l">All stages</div></div>
+      <div class="hstat-divider"></div>
+      <div class="hstat"><div class="v">Free</div><div class="l">To start</div></div>
+    </div>
+  </div>
+
+  <!-- APP MOCKUP -->
+  <div class="mockup-wrap">
+    <div class="mockup-frame">
+      <div class="browser-bar">
+        <div class="browser-dots"><span></span><span></span><span></span></div>
+        <div class="browser-url">brightprep.com/practice</div>
+      </div>
+      <div class="app-preview">
+
+        <!-- Sidebar -->
+        <div class="mp-sidebar">
+          <div class="mp-sb-logo">
+            <div class="mp-sb-icon">B</div>
+            <div><div class="mp-sb-text">BrightPrep</div><div class="mp-sb-sub">British Curriculum</div></div>
+          </div>
+          <div class="mp-nav-item"><span class="icon">🏠</span>Dashboard</div>
+          <div class="mp-nav-item active"><span class="icon">📝</span>Practice</div>
+          <div class="mp-nav-item"><span class="icon">📄</span>Mock Papers</div>
+          <div class="mp-nav-item"><span class="icon">📊</span>My Progress</div>
+          <div class="mp-nav-item"><span class="icon">📅</span>Revision Plan</div>
+          <div class="mp-stage">
+            <div class="lbl">Year group</div>
+            <select><option>GCSE Year 11</option></select>
+          </div>
+          <div class="mp-user">
+            <div class="mp-av">S</div>
+            <div class="mp-user-txt"><div class="name">Student</div><div class="plan">Pro plan ⭐</div></div>
+          </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="mp-main">
+          <div class="mp-topbar">
+            <span class="mp-topbar-title">Practice Questions · GCSE Maths</span>
+            <div class="mp-chips">
+              <div class="mp-chip amber">🔥 7 streak</div>
+              <div class="mp-chip purple">⚡ 340 XP</div>
+            </div>
+          </div>
+          <div class="mp-content">
+            <div class="mp-kpi-row">
+              <div class="mp-kpi"><div class="icon">✅</div><div class="val">48</div><div class="lbl">Done</div></div>
+              <div class="mp-kpi"><div class="icon">🎯</div><div class="val">74%</div><div class="lbl">Accuracy</div></div>
+              <div class="mp-kpi"><div class="icon">🔥</div><div class="val">7</div><div class="lbl">Streak</div></div>
+              <div class="mp-kpi"><div class="icon">⭐</div><div class="val">5</div><div class="lbl">Mastered</div></div>
+            </div>
+
+            <!-- Question card -->
+            <div class="mp-q-card">
+              <div class="mp-q-tags">
+                <div class="mp-qtag green">3 marks</div>
+                <div class="mp-qtag blue">Quadratics</div>
+                <div class="mp-qtag amber">Higher · AQA</div>
+              </div>
+              <div class="mp-q-text">Solve by completing the square: <strong>x² + 6x − 7 = 0</strong></div>
+              <div class="mp-opts">
+                <div class="mp-opt"><div class="mp-opt-key">A</div>x = 2 or x = −8</div>
+                <div class="mp-opt corr"><div class="mp-opt-key">B</div>x = 1 or x = −7</div>
+                <div class="mp-opt"><div class="mp-opt-key">C</div>x = 3 or x = −9</div>
+                <div class="mp-opt sel"><div class="mp-opt-key">D</div>x = 4 or x = −6</div>
+              </div>
+              <div class="mp-feedback">✅ <strong>Correct!</strong> (x+3)² − 9 − 7 = 0 → (x+3)² = 16 → x+3 = ±4 → x = 1 or x = −7</div>
+            </div>
+
+            <!-- Progress card -->
+            <div class="mp-prog-card">
+              <div class="mp-prog-title">🎯 Topic mastery</div>
+              <div class="mp-skill">
+                <div class="mp-skill-name">Algebra</div>
+                <div class="mp-skill-track"><div class="mp-skill-fill" style="width:82%;background:#00A67E"></div></div>
+                <div class="mp-skill-pct" style="color:#00A67E">82%</div>
+              </div>
+              <div class="mp-skill">
+                <div class="mp-skill-name">Quadratics</div>
+                <div class="mp-skill-track"><div class="mp-skill-fill" style="width:61%;background:#2B7FE0"></div></div>
+                <div class="mp-skill-pct" style="color:#2B7FE0">61%</div>
+              </div>
+              <div class="mp-skill">
+                <div class="mp-skill-name">Statistics</div>
+                <div class="mp-skill-track"><div class="mp-skill-fill" style="width:44%;background:#F59E0B"></div></div>
+                <div class="mp-skill-pct" style="color:#F59E0B">44%</div>
+              </div>
+              <div class="mp-skill">
+                <div class="mp-skill-name">Circle Theorems</div>
+                <div class="mp-skill-track"><div class="mp-skill-fill" style="width:28%;background:#E53E3E"></div></div>
+                <div class="mp-skill-pct" style="color:#E53E3E">28%</div>
+              </div>
+              <div class="mp-skill">
+                <div class="mp-skill-name">Trigonometry</div>
+                <div class="mp-skill-track"><div class="mp-skill-fill" style="width:55%;background:#F59E0B"></div></div>
+                <div class="mp-skill-pct" style="color:#F59E0B">55%</div>
+              </div>
+            </div>
+
+            <!-- AI Tutor card -->
+            <div class="mp-ai-card">
+              <div class="mp-ai-title">🤖 AI Tutor</div>
+              <div class="mp-ai-msg ai">Hi! Ask me anything about this question — I'll give you hints without spoiling the answer.</div>
+              <div class="mp-ai-msg you">What does "completing the square" mean?</div>
+              <div class="mp-ai-msg ai">It means rewriting x²+bx as (x + b/2)² minus a constant. So x²+6x = (x+3)² − 9. Then solve from there! 🎯</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES BENTO -->
+<section class="bento" id="features">
+  <div class="bento-grid">
+    <div class="bento-card dark span2 reveal">
+      <div class="bento-tag teal">Real exam format</div>
+      <h3>Questions written like your <em style="font-style:italic;color:rgba(255,255,255,.55)">actual papers</em></h3>
+      <p>Every question mirrors the style, command words, and mark schemes of AQA, Edexcel, and OCR. You'll see the same types of questions in your real exam.</p>
+      <div class="bento-q">
+        <div class="bq-text">A car of mass 1200 kg accelerates uniformly from rest to 18 m/s in 6 seconds. Calculate the resultant force. <strong>[3 marks]</strong></div>
+        <div class="bq-opts">
+          <div class="bq-opt"><div class="bq-key">A</div>2,400 N</div>
+          <div class="bq-opt correct"><div class="bq-key">B</div>3,600 N</div>
+          <div class="bq-opt"><div class="bq-key">C</div>1,800 N</div>
+          <div class="bq-opt"><div class="bq-key">D</div>7,200 N</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bento-card teal reveal">
+      <div class="bento-icon">🤖</div>
+      <div class="bento-tag teal">AI Tutor</div>
+      <h3>Hints, not answers</h3>
+      <p>A live AI tutor on every question that nudges you in the right direction — without giving the game away.</p>
+    </div>
+
+    <div class="bento-card dark reveal">
+      <div class="bento-icon">📊</div>
+      <div class="bento-tag blue">Progress tracking</div>
+      <h3>See exactly where you stand</h3>
+      <p>Topic-by-topic mastery scores, predicted grades, and a 30-day activity heatmap.</p>
+      <div class="bento-viz">
+        <div class="bv-row"><span class="bv-label" style="color:rgba(255,255,255,.5)">Number</span><div class="bv-track"><div class="bv-fill" style="width:88%;background:#00A67E"></div></div><span class="bv-pct" style="color:#00A67E">88%</span></div>
+        <div class="bv-row"><span class="bv-label" style="color:rgba(255,255,255,.5)">Quadratics</span><div class="bv-track"><div class="bv-fill" style="width:35%;background:#E53E3E"></div></div><span class="bv-pct" style="color:#E53E3E">35%</span></div>
+        <div class="bv-row"><span class="bv-label" style="color:rgba(255,255,255,.5)">Statistics</span><div class="bv-track"><div class="bv-fill" style="width:56%;background:#F59E0B"></div></div><span class="bv-pct" style="color:#F59E0B">56%</span></div>
+      </div>
+    </div>
+
+    <div class="bento-card gold reveal">
+      <div class="bento-icon">🎯</div>
+      <div class="bento-tag gold">Predicted grades</div>
+      <h3>Know your grade before exam day</h3>
+      <p>Accuracy across topics maps to a predicted GCSE grade (1–9) or A-Level grade — so there are no surprises.</p>
+    </div>
+
+    <div class="bento-card light reveal">
+      <div class="bento-icon">📅</div>
+      <h3 style="color:var(--ink)">Personalised revision plan</h3>
+      <p>Set your exam date. We build a week-by-week plan that focuses on your weakest topics first — adapting as you improve.</p>
+    </div>
+
+    <div class="bento-card dark reveal">
+      <div class="bento-icon">📄</div>
+      <div class="bento-tag blue">Mock papers</div>
+      <h3>Full timed papers</h3>
+      <p>Simulate real exam conditions with timed mock papers, instant marking, and a full breakdown of where marks were lost.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CURRICULUM -->
+<section class="curr-section" id="curriculum">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-tag">Coverage</div>
+      <h2 class="section-h">Every stage of the British curriculum</h2>
+      <p class="section-sub">From Year 3 arithmetic to A-Level calculus — complete coverage aligned to the national curriculum and major exam boards.</p>
+    </div>
+    <div class="stages-row">
+      <div class="stage-card reveal">
+        <h3>KS2</h3>
+        <div class="years">Years 3–6 · Ages 7–11</div>
+        <div class="stage-subjects">
+          <span class="subj-pill maths">Maths</span>
+          <span class="subj-pill science">Science</span>
+          <span class="subj-pill english">English</span>
+        </div>
+        <div style="margin-top:1rem;font-size:12px;color:var(--txt3)">SATs preparation · 11+ grammar & independent school entrance</div>
+      </div>
+      <div class="stage-card reveal">
+        <h3>KS3</h3>
+        <div class="years">Years 7–9 · Ages 11–14</div>
+        <div class="stage-subjects">
+          <span class="subj-pill maths">Maths</span>
+          <span class="subj-pill science">Science</span>
+          <span class="subj-pill english">English</span>
+          <span class="subj-pill verbal">Verbal R.</span>
+        </div>
+        <div style="margin-top:1rem;font-size:12px;color:var(--txt3)">Foundation building · CAT4 preparation</div>
+      </div>
+      <div class="stage-card reveal">
+        <h3>GCSE</h3>
+        <div class="years">Years 10–11 · Ages 14–16</div>
+        <div class="stage-subjects">
+          <span class="subj-pill maths">Maths</span>
+          <span class="subj-pill science">Science</span>
+          <span class="subj-pill english">English Lit</span>
+          <span class="subj-pill english">English Lang</span>
+        </div>
+        <div style="margin-top:1rem;font-size:12px;color:var(--txt3)">AQA · Edexcel · OCR · iGCSE · Foundation & Higher</div>
+      </div>
+      <div class="stage-card reveal">
+        <h3>A-Level</h3>
+        <div class="years">Years 12–13 · Ages 16–18</div>
+        <div class="stage-subjects">
+          <span class="subj-pill maths">Maths</span>
+          <span class="subj-pill science">Physics</span>
+          <span class="subj-pill science">Chemistry</span>
+          <span class="subj-pill science">Biology</span>
+        </div>
+        <div style="margin-top:1rem;font-size:12px;color:var(--txt3)">Further Maths · Mechanics · Statistics</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COUPON SECTION -->
+<section class="coupon-section">
+  <div class="section-inner">
+    <div class="coupon-inner reveal">
+      <div class="coupon-badge">🎁 Limited time offer</div>
+      <h2>Get 3 months completely free</h2>
+      <p>Use code <strong style="color:var(--gold)">BRIGHT100</strong> at signup for 3 months of full Pro access — no credit card required. Join hundreds of students already using BrightPrep.</p>
+      <div class="coupon-box">
+        <div class="coupon-code-display">BRIGHT100</div>
+        <div class="coupon-desc">3 months Pro access · No card needed · Cancel any time</div>
+        <div class="coupon-features">
+          <div class="coupon-feature">All 5 subjects — Maths, Science, English, Verbal & Non-Verbal</div>
+          <div class="coupon-feature">Unlimited practice questions with worked solutions</div>
+          <div class="coupon-feature">AI Tutor on every question</div>
+          <div class="coupon-feature">Full mock papers with instant marking</div>
+          <div class="coupon-feature">Predicted grades and personalised revision plan</div>
+        </div>
+        <button class="btn-coupon-cta" onclick="openAuthWithCoupon()">Claim free access →</button>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.35)">Offer expires in:</p>
+      <div class="countdown">
+        <div class="cd-item"><div class="cd-val" id="cdDays">02</div><div class="cd-lbl">Days</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><div class="cd-val" id="cdHrs">14</div><div class="cd-lbl">Hours</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><div class="cd-val" id="cdMins">37</div><div class="cd-lbl">Mins</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-item"><div class="cd-val" id="cdSecs">00</div><div class="cd-lbl">Secs</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testi-section" id="testimonials">
+  <div class="section-inner">
+    <div class="reveal" style="text-align:center;max-width:600px;margin:0 auto 1rem">
+      <div class="section-tag">Reviews</div>
+      <h2 class="section-h">Families who <em>love</em> BrightPrep</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"My daughter went from a predicted Grade 4 to achieving a Grade 7 in her GCSE Maths mock. The AI tutor explains things so clearly — better than some teachers honestly."</div>
+        <div class="testi-author"><div class="testi-av" style="background:#6C4FD4">S</div><div><div class="testi-name">Sarah M.</div><div class="testi-role">Parent · GCSE Maths</div></div></div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Preparing for the 11+ is stressful as a parent. BrightPrep gave us a structured plan and my son actually enjoys doing it. He's up to 45 minutes a day now without being pushed!"</div>
+        <div class="testi-author"><div class="testi-av" style="background:#F0A500;color:#0A0F1E">R</div><div><div class="testi-name">Ravi P.</div><div class="testi-role">Parent · 11+ preparation</div></div></div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"The exam-style questions are spot on. I could tell straight away these were written by people who know the papers. My Year 11 students use it for homework and it's transformed their confidence."</div>
+        <div class="testi-author"><div class="testi-av" style="background:#00A67E">T</div><div><div class="testi-name">Miss T. Clarke</div><div class="testi-role">Maths Teacher · KS4</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="section-inner">
+    <div class="reveal" style="text-align:center;margin-bottom:2rem">
+      <div class="section-tag">Pricing</div>
+      <h2 class="section-h">Simple, honest pricing</h2>
+      <p class="section-sub" style="margin:0 auto">Start free. Upgrade when you're ready. Use code <strong>BRIGHT100</strong> for 3 months free.</p>
+    </div>
+    <div class="pricing-toggle reveal">
+      <span class="ptoggle-label">Monthly</span>
+      <div class="ptoggle-switch" id="billingToggle" onclick="toggleBilling()"></div>
+      <span class="ptoggle-label">Annual <span class="save-badge">Save 35%</span></span>
+    </div>
+    <div class="pricing-grid reveal">
+      <div class="price-card">
+        <div class="pc-label">Free</div>
+        <div class="pc-price">£0<span class="pc-per">/month</span></div>
+        <div class="pc-desc">Try before you buy. Sample questions from every topic.</div>
+        <ul class="pc-feats">
+          <li>Maths & Science topics</li>
+          <li>5 free questions per topic</li>
+          <li>Worked solutions</li>
+          <li class="muted">AI Tutor</li>
+          <li class="muted">Mock papers</li>
+          <li class="muted">Progress tracking</li>
+          <li class="muted">Revision plan</li>
+        </ul>
+        <button class="btn-plan" onclick="openAuth('signup')">Start free →</button>
+      </div>
+
+      <div class="price-card featured">
+        <div class="pc-label">Pro <span class="pc-popular">Most popular</span></div>
+        <div class="pc-price"><span id="proPrice">£9.99</span><span class="pc-per" id="proPer">/month</span></div>
+        <div class="pc-desc">Everything you need to ace your exams. Use <strong style="color:var(--gold)">BRIGHT100</strong> for 3 months free.</div>
+        <ul class="pc-feats">
+          <li>All 5 subjects</li>
+          <li>Unlimited questions</li>
+          <li>AI Tutor on every question</li>
+          <li>Unlimited mock papers</li>
+          <li>Predicted grades</li>
+          <li>Full progress tracking</li>
+          <li>Personalised revision plan</li>
+        </ul>
+        <button class="btn-plan" onclick="openAuthWithCoupon()">Claim 3 months free →</button>
+      </div>
+
+      <div class="price-card">
+        <div class="pc-label">School</div>
+        <div class="pc-price">Custom</div>
+        <div class="pc-desc">Bulk access for classrooms and tutoring centres with teacher dashboards.</div>
+        <ul class="pc-feats">
+          <li>Everything in Pro</li>
+          <li>Teacher dashboard</li>
+          <li>Class progress reports</li>
+          <li>Set homework & track</li>
+          <li>Priority support</li>
+          <li>Custom branding</li>
+          <li>Invoice billing</li>
+        </ul>
+        <button class="btn-plan" onclick="window.location='mailto:hello@brightprep.co.uk'">Contact us →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section">
+  <div style="position:relative;z-index:1">
+    <h2>Ready to start practising?</h2>
+    <p>Join students across the UK building exam confidence with BrightPrep. First 3 months free with code BRIGHT100.</p>
+    <button class="btn-hero-primary" onclick="openAuthWithCoupon()">Get 3 months free →</button>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo"><div class="logo-gem" style="width:28px;height:28px;font-size:13px">B</div>BrightPrep</div>
+    <div class="footer-links">
+      <a href="#">About</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="mailto:hello@brightprep.co.uk">Contact</a>
+    </div>
+    <div class="footer-copy">© 2025 BrightPrep Ltd · British Curriculum · KS2–A-Level</div>
+  </div>
+</footer>
+
+<!-- ════════════════════════════════════════
+     AUTH MODAL
+════════════════════════════════════════ -->
+<div class="auth-overlay" id="authOverlay" onclick="if(event.target===this)closeAuth()">
+  <div class="auth-modal">
+
+    <!-- Header with coupon banner -->
+    <div class="am-header">
+      <button class="am-close" onclick="closeAuth()">✕</button>
+      <div class="am-header-logo">
+        <div class="am-gem">B</div>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:#fff">BrightPrep</div>
+          <div style="font-size:10px;color:rgba(255,255,255,.4)">British Curriculum</div>
+        </div>
+      </div>
+      <h2 id="amTitle">Create your account</h2>
+      <p id="amSub">Start 3 months free — no card required.</p>
+      <!-- Coupon banner shown when code is pre-applied -->
+      <div class="am-coupon-banner" id="amCouponBanner" style="display:none;margin-top:1rem">
+        <div class="am-coupon-icon">🎁</div>
+        <div class="am-coupon-text">
+          <strong id="amCouponLabel">3 months free applied!</strong>
+          <span id="amCouponSub">Code will be applied at checkout</span>
+        </div>
+        <div class="am-coupon-code" id="amCouponCode">BRIGHT100</div>
+      </div>
+    </div>
+
+    <div class="am-body">
+      <div class="am-tabs">
+        <button class="am-tab on" id="tabSignup" onclick="switchAmTab('signup')">Create account</button>
+        <button class="am-tab" id="tabSignin" onclick="switchAmTab('signin')">Sign in</button>
+      </div>
+
+      <!-- SIGN UP -->
+      <div id="formSignup" class="am-form">
+        <div class="am-error" id="suErr"></div>
+        <div class="am-success" id="suOk"></div>
+
+        <!-- Pre-applied coupon display -->
+        <div class="coupon-applied" id="couponAppliedBox" style="display:none">
+          <span class="ca-code" id="caCode">BRIGHT100</span>
+          <span class="ca-desc" id="caDesc">3 months free — applied automatically!</span>
+          <button class="ca-remove" onclick="removeCoupon()">✕ Remove</button>
+        </div>
+
+        <div class="field"><label>Your name</label><input type="text" id="suName" placeholder="First name"/></div>
+        <div class="field"><label>Email</label><input type="email" id="suEmail" placeholder="you@example.com"/></div>
+        <div class="field"><label>Password</label><input type="password" id="suPass" placeholder="8+ characters"/></div>
+        <div class="field">
+          <label>Year group</label>
+          <select id="suYear">
+            <option value="">Select year group…</option>
+            <option>Year 3</option><option>Year 4</option><option>Year 5</option>
+            <option>Year 6</option><option>Year 7</option><option>Year 8</option><option>Year 9</option>
+            <option>GCSE Year 10</option><option>GCSE Year 11</option>
+            <option>A-Level Year 12</option><option>A-Level Year 13</option>
+          </select>
+        </div>
+
+        <!-- Coupon input — shown if no code pre-applied -->
+        <div id="couponInputWrap">
+          <div class="field">
+            <label>Promo code <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--txt3)">(optional)</span></label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="suCoupon" placeholder="e.g. BRIGHT100" style="text-transform:uppercase;flex:1"/>
+              <button onclick="applySignupCoupon()" style="padding:0 14px;background:var(--cream2);border:1.5px solid var(--bdr2);border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">Apply</button>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--txt3);margin-top:-.5rem;margin-bottom:.9rem" id="couponFeedback"></div>
+        </div>
+
+        <button class="btn-form-primary" onclick="doSignup()">
+          <span id="suSpin" class="spin" style="display:none"></span>
+          <span id="suBtnText">Create account & start free</span>
+        </button>
+        <div class="or-divider">or</div>
+        <button class="btn-form-google" onclick="doGoogleAuth()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <p class="am-note">7-day free trial · No card required · <a href="#">Terms</a></p>
+      </div>
+
+      <!-- SIGN IN -->
+      <div id="formSignin" class="am-form" style="display:none">
+        <div class="am-error" id="siErr"></div>
+        <h3>Welcome back</h3>
+        <p class="sub">Sign in to continue your practice.</p>
+        <div class="field"><label>Email</label><input type="email" id="siEmail" placeholder="you@example.com"/></div>
+        <div class="field"><label>Password</label><input type="password" id="siPass" placeholder="Your password"/></div>
+        <button class="btn-form-primary" onclick="doSignin()">
+          <span id="siSpin" class="spin" style="display:none"></span>
+          <span id="siBtnText">Sign in</span>
+        </button>
+        <div class="or-divider">or</div>
+        <button class="btn-form-google" onclick="doGoogleAuth()">
+          <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z"/><path fill="#FBBC05" d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+          Continue with Google
+        </button>
+        <div class="am-note" style="margin-top:.75rem"><a href="#" onclick="switchAmTab('signup')">No account? Sign up free →</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── VALID COUPON CODES ──────────────────────────────
+const COUPONS = {
+  'BRIGHT100': { label:'3 months free!', desc:'3 months Pro access — no card needed', strip:true },
+  'BRIGHT50':  { label:'50% off for 3 months', desc:'Half price for your first 3 months', strip:true },
+  'EARLYBIRD': { label:'30% off annual plan', desc:'30% off when you go annual', strip:true },
+  'TEACHER':   { label:'1 month free for teachers', desc:'Free Pro access for educators', strip:true },
+  'SCHOOL2025':{ label:'40% off school plans', desc:'Discounted access for schools', strip:true },
+};
+
+let activeCoupon = null;
+
+// ── AUTH MODAL ──────────────────────────────────────
+function openAuth(tab='signup') {
+  document.getElementById('authOverlay').classList.add('open');
+  switchAmTab(tab);
+  document.body.style.overflow = 'hidden';
+}
+
+function openAuthWithCoupon(code='BRIGHT100') {
+  openAuth('signup');
+  setTimeout(() => preApplyCoupon(code), 50);
+}
+
+function closeAuth() {
+  document.getElementById('authOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function switchAmTab(tab) {
+  document.getElementById('formSignup').style.display = tab==='signup' ? 'block' : 'none';
+  document.getElementById('formSignin').style.display = tab==='signin' ? 'block' : 'none';
+  document.getElementById('tabSignup').classList.toggle('on', tab==='signup');
+  document.getElementById('tabSignin').classList.toggle('on', tab==='signin');
+  if (tab==='signup') {
+    document.getElementById('amTitle').textContent = 'Create your account';
+    document.getElementById('amSub').textContent = 'Start 3 months free — no card required.';
+  } else {
+    document.getElementById('amTitle').textContent = 'Welcome back';
+    document.getElementById('amSub').textContent = 'Sign in to continue your practice.';
+  }
+}
+
+function preApplyCoupon(code) {
+  const c = COUPONS[code.toUpperCase()];
+  if (!c) return;
+  activeCoupon = code.toUpperCase();
+  // Show green applied box
+  document.getElementById('couponAppliedBox').style.display = 'flex';
+  document.getElementById('caCode').textContent = activeCoupon;
+  document.getElementById('caDesc').textContent = c.desc;
+  // Hide manual input
+  document.getElementById('couponInputWrap').style.display = 'none';
+  // Show banner in header
+  document.getElementById('amCouponBanner').style.display = 'flex';
+  document.getElementById('amCouponLabel').textContent = c.label;
+  document.getElementById('amCouponSub').textContent = 'Applied to your account automatically';
+  document.getElementById('amCouponCode').textContent = activeCoupon;
+}
+
+function removeCoupon() {
+  activeCoupon = null;
+  document.getElementById('couponAppliedBox').style.display = 'none';
+  document.getElementById('couponInputWrap').style.display = 'block';
+  document.getElementById('amCouponBanner').style.display = 'none';
+}
+
+function applySignupCoupon() {
+  const code = document.getElementById('suCoupon').value.trim().toUpperCase();
+  const fb = document.getElementById('couponFeedback');
+  if (COUPONS[code]) {
+    fb.style.color = '#00A67E';
+    fb.textContent = '✅ ' + code + ': ' + COUPONS[code].label;
+    preApplyCoupon(code);
+    document.getElementById('suCoupon').value = '';
+  } else if (code) {
+    fb.style.color = '#E53E3E';
+    fb.textContent = '❌ "' + code + '" is not a valid code. Try BRIGHT100 for 3 months free!';
+  }
+}
+
+// ── SUPABASE CONFIG ──────────────────────────────────
+// 🔧 Step 1: paste your values from supabase.com → Project Settings → API
+const SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY';
+
+// Initialise client (only if keys are filled in)
+let sb = null;
+if (!SUPABASE_URL.includes('YOUR_PROJECT')) {
+  sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // If already logged in, skip straight to app
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) goToApp(session.user);
+  });
+  // Handles email-confirmation redirect back to this page
+  sb.auth.onAuthStateChange((_event, session) => {
+    if (session) goToApp(session.user);
+  });
+}
+
+function goToApp(user) {
+  // Pass coupon in URL so app.html can pick it up and apply at checkout
+  const params = new URLSearchParams();
+  if (activeCoupon) params.set('coupon', activeCoupon);
+  window.location.href = 'app.html' + (activeCoupon ? '?' + params.toString() : '');
+}
+
+// ── AUTH ACTIONS ─────────────────────────────────────
+async function doSignup() {
+  const name  = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const pass  = document.getElementById('suPass').value;
+  const year  = document.getElementById('suYear').value;
+  const errEl = document.getElementById('suErr');
+  const okEl  = document.getElementById('suOk');
+
+  errEl.classList.remove('on'); okEl.classList.remove('on');
+  if (!name || !email || !pass) { errEl.textContent='Please fill in all fields.'; errEl.classList.add('on'); return; }
+  if (pass.length < 8) { errEl.textContent='Password must be at least 8 characters.'; errEl.classList.add('on'); return; }
+
+  setLoading('su', true);
+
+  if (sb) {
+    const { data, error } = await sb.auth.signUp({
+      email, password: pass,
+      options: {
+        data: { name, year_group: year, coupon_code: activeCoupon || null },
+        emailRedirectTo: window.location.origin + '/app.html'
+          + (activeCoupon ? '?coupon=' + activeCoupon : ''),
+      }
+    });
+    setLoading('su', false);
+    if (error) { errEl.textContent = error.message; errEl.classList.add('on'); return; }
+    // Create profile row in Supabase
+    if (data?.user) {
+      await sb.from('profiles').upsert({
+        id: data.user.id, name, year_group: year,
+        is_pro: false, plan: 'free',
+        coupon_used: activeCoupon || null,
+        created_at: new Date().toISOString(),
+      });
+    }
+    okEl.innerHTML = '✅ Account created! <strong>Check your email</strong> to confirm, then you\'ll be taken straight to the app.'
+      + (activeCoupon ? ' Code <strong>' + activeCoupon + '</strong> is saved to your account.' : '');
+    okEl.classList.add('on');
+  } else {
+    // ── DEMO MODE (no Supabase keys yet) ──
+    setLoading('su', false);
+    okEl.innerHTML = '✅ <strong>Demo mode</strong> — add your Supabase keys to enable real accounts. '
+      + 'See <code>SETUP_GUIDE.md</code>.'
+      + (activeCoupon ? ' Code <strong>' + activeCoupon + '</strong> would be applied.' : '');
+    okEl.classList.add('on');
+    // Still redirect to app so you can preview it
+    setTimeout(() => goToApp(null), 1800);
+  }
+}
+
+async function doSignin() {
+  const email = document.getElementById('siEmail').value.trim();
+  const pass  = document.getElementById('siPass').value;
+  const errEl = document.getElementById('siErr');
+  errEl.classList.remove('on');
+  if (!email || !pass) { errEl.textContent='Please fill in all fields.'; errEl.classList.add('on'); return; }
+
+  setLoading('si', true);
+
+  if (sb) {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
+    setLoading('si', false);
+    if (error) { errEl.textContent = error.message; errEl.classList.add('on'); return; }
+    goToApp(data.user);
+  } else {
+    // Demo mode — redirect anyway so you can see the app
+    await new Promise(r => setTimeout(r, 800));
+    setLoading('si', false);
+    goToApp(null);
+  }
+}
+
+async function doGoogleAuth() {
+  if (sb) {
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin + '/app.html'
+        + (activeCoupon ? '?coupon=' + activeCoupon : '') }
+    });
+  } else {
+    // Demo mode
+    goToApp(null);
+  }
+}
+
+function setLoading(prefix, on) {
+  document.getElementById(prefix+'Spin').style.display = on ? 'inline-block' : 'none';
+  document.getElementById(prefix+'BtnText').textContent = on
+    ? (prefix==='su' ? 'Creating account…' : 'Signing in…')
+    : (prefix==='su' ? 'Create account & start free' : 'Sign in');
+  document.querySelector(prefix==='su' ? '#formSignup .btn-form-primary' : '#formSignin .btn-form-primary').disabled = on;
+}
+
+// ── PRICING TOGGLE ───────────────────────────────────
+let isAnnual = false;
+function toggleBilling() {
+  isAnnual = !isAnnual;
+  document.getElementById('billingToggle').classList.toggle('annual', isAnnual);
+  document.getElementById('proPrice').textContent = isAnnual ? '£64.99' : '£9.99';
+  document.getElementById('proPer').textContent = isAnnual ? '/year (save 35%)' : '/month';
+}
+
+// ── COUNTDOWN ────────────────────────────────────────
+function startCountdown() {
+  // Fixed 2-day countdown from page load
+  let total = 2 * 24 * 60 * 60 + 14 * 3600 + 37 * 60;
+  const tick = () => {
+    if (total <= 0) return;
+    total--;
+    const d = Math.floor(total / 86400);
+    const h = Math.floor((total % 86400) / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    const fmt = n => String(n).padStart(2,'0');
+    document.getElementById('cdDays').textContent = fmt(d);
+    document.getElementById('cdHrs').textContent  = fmt(h);
+    document.getElementById('cdMins').textContent = fmt(m);
+    document.getElementById('cdSecs').textContent = fmt(s);
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ── SCROLL REVEALS ───────────────────────────────────
+function initReveal() {
+  const els = document.querySelectorAll('.reveal');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  els.forEach(el => obs.observe(el));
+}
+
+// ── CHECK URL COUPON ─────────────────────────────────
+function checkUrlCoupon() {
+  const p = new URLSearchParams(window.location.search);
+  const c = p.get('coupon') || p.get('code');
+  if (c && COUPONS[c.toUpperCase()]) {
+    // Show a sticky banner at top
+    const bar = document.createElement('div');
+    bar.style.cssText = 'position:fixed;top:68px;left:0;right:0;z-index:90;background:'+
+      'linear-gradient(90deg,#001a14,#003328);border-bottom:1px solid rgba(0,166,126,0.3);'+
+      'padding:10px 2rem;display:flex;align-items:center;justify-content:center;gap:12px;font-size:13px';
+    bar.innerHTML = '<span style="color:rgba(255,255,255,.6)">🎁 Promo code</span>'+
+      '<strong style="color:#5EFFD3;font-family:monospace;letter-spacing:.1em">'+c.toUpperCase()+'</strong>'+
+      '<span style="color:rgba(255,255,255,.6)">'+COUPONS[c.toUpperCase()].label+'</span>'+
+      '<button onclick="openAuthWithCoupon(\''+c.toUpperCase()+'\')" style="background:var(--teal);color:#fff;border:none;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;margin-left:8px">Claim now →</button>'+
+      '<button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.3);cursor:pointer;margin-left:4px;font-size:16px">✕</button>';
+    document.body.prepend(bar);
+  }
+}
+
+// ── BOOT ─────────────────────────────────────────────
+startCountdown();
+initReveal();
+checkUrlCoupon();
+</script>
+</body>
+</html>

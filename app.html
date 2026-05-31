@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BrightPrep · British Curriculum Exam Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+/* ─────────────────────────────────────────────
+   DESIGN TOKENS & RESET
+───────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy2:#112240;--navyhover:#1a3560;
+  --gold:#F0A500;--gold2:#D4900A;
+  --teal:#00A67E;--teal2:#007A5E;--teallight:#E8F8F4;
+  --blue:#2B7FE0;--bluelight:#EBF4FF;
+  --purple:#6C4FD4;
+  --red:#E53E3E;--redlight:#FFF5F5;
+  --green:#38A169;--greenlight:#F0FFF4;
+  --amber:#F59E0B;--amberlight:#FFFBEB;
+  --bg:#FFFFFF;--bg2:#F7F8FA;--bg3:#EEF0F4;
+  --txt:#111827;--txt2:#4B5563;--txt3:#9CA3AF;
+  --bdr:rgba(0,0,0,0.07);--bdr2:rgba(0,0,0,0.13);
+  --r:10px;--rlg:16px;--rxl:24px;
+  --sh:0 1px 4px rgba(0,0,0,0.06),0 4px 16px rgba(0,0,0,0.06);
+  --sh2:0 4px 24px rgba(0,0,0,0.1);
+  --font:'Sora',sans-serif;--serif:'Lora',serif
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);color:var(--txt);background:var(--bg);min-height:100vh;font-size:15px}
+button{font-family:var(--font);cursor:pointer}
+input,select,textarea{font-family:var(--font)}
+a{text-decoration:none;color:inherit}
+
+/* ─────────────────────────────────────────────
+   AUTH SCREENS
+───────────────────────────────────────────── */
+#authScreen{
+  display:flex;min-height:100vh;
+}
+#authScreen.hidden{display:none}
+
+.auth-left{
+  width:480px;flex-shrink:0;background:linear-gradient(145deg,var(--navy) 0%,var(--navy2) 50%,#0a3828 100%);
+  padding:3rem;display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.auth-left::before{
+  content:'';position:absolute;top:-80px;right:-80px;
+  width:320px;height:320px;border-radius:50%;
+  background:rgba(240,165,0,0.07);pointer-events:none;
+}
+.auth-left::after{
+  content:'';position:absolute;bottom:-60px;left:-60px;
+  width:240px;height:240px;border-radius:50%;
+  background:rgba(0,166,126,0.07);pointer-events:none;
+}
+.auth-brand{display:flex;align-items:center;gap:12px;margin-bottom:3rem}
+.auth-logo-icon{width:42px;height:42px;background:var(--gold);border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;color:var(--navy)}
+.auth-logo-text{font-size:1.25rem;font-weight:700;color:#fff}
+.auth-logo-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-top:1px;letter-spacing:.04em}
+
+.auth-left h1{font-family:var(--serif);font-size:2rem;color:#fff;line-height:1.25;margin-bottom:1rem;position:relative}
+.auth-left h1 em{color:var(--gold);font-style:normal}
+.auth-left p{color:rgba(255,255,255,0.6);font-size:14px;line-height:1.7;margin-bottom:2rem;position:relative}
+
+.auth-features{position:relative}
+.auth-feature{display:flex;align-items:flex-start;gap:12px;margin-bottom:1rem}
+.af-icon{width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.af-text{font-size:13px;color:rgba(255,255,255,0.7);line-height:1.5}
+.af-text strong{color:#fff;font-weight:600;display:block;margin-bottom:1px}
+
+.auth-stat-row{display:flex;gap:1.5rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);position:relative}
+.auth-stat .v{font-size:1.4rem;font-weight:700;color:#fff}
+.auth-stat .l{font-size:11px;color:rgba(255,255,255,0.4)}
+
+.auth-right{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;background:var(--bg2)}
+.auth-form-wrap{width:100%;max-width:420px}
+
+.auth-tabs{display:flex;gap:0;border:0.5px solid var(--bdr2);border-radius:var(--r);overflow:hidden;margin-bottom:1.75rem}
+.atab{flex:1;padding:.7rem;font-size:14px;font-weight:500;border:none;background:var(--bg2);color:var(--txt2);cursor:pointer;transition:all .15s}
+.atab.active{background:var(--navy);color:#fff}
+
+.auth-form h2{font-size:1.3rem;font-weight:700;margin-bottom:.3rem}
+.auth-form .auth-sub{font-size:13px;color:var(--txt2);margin-bottom:1.5rem}
+
+.field{margin-bottom:1rem}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.04em}
+.field input{width:100%;padding:11px 14px;border:1.5px solid var(--bdr2);border-radius:var(--r);font-size:15px;color:var(--txt);background:var(--bg);transition:border-color .15s}
+.field input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,166,126,0.1)}
+.field input.error{border-color:var(--red)}
+
+.coupon-row{display:flex;gap:8px;margin-bottom:1.25rem}
+.coupon-row input{flex:1;padding:10px 14px;border:1.5px solid var(--bdr2);border-radius:var(--r);font-size:14px;color:var(--txt);background:var(--bg);text-transform:uppercase}
+.coupon-row input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,165,0,0.12)}
+.btn-apply-coupon{padding:10px 16px;background:var(--bg3);border:0.5px solid var(--bdr2);border-radius:var(--r);font-size:13px;font-weight:600;color:var(--txt2);white-space:nowrap}
+.btn-apply-coupon:hover{background:var(--bg);color:var(--txt)}
+
+.coupon-status{font-size:12px;padding:7px 12px;border-radius:8px;margin-bottom:1rem;display:none}
+.coupon-status.ok{background:var(--greenlight);color:#276749;border:1px solid rgba(56,161,105,.25);display:block}
+.coupon-status.bad{background:var(--redlight);color:#9B2C2C;border:1px solid rgba(229,62,62,.25);display:block}
+
+.btn-primary{width:100%;background:var(--teal);color:#fff;border:none;padding:13px;border-radius:var(--r);font-size:15px;font-weight:700;transition:background .15s;margin-bottom:.75rem}
+.btn-primary:hover{background:var(--teal2)}
+.btn-primary:disabled{background:var(--bg3);color:var(--txt3)}
+.btn-secondary{width:100%;background:var(--bg);color:var(--txt);border:1px solid var(--bdr2);padding:12px;border-radius:var(--r);font-size:14px;font-weight:500;transition:all .15s}
+.btn-secondary:hover{border-color:var(--bdr3);background:var(--bg2)}
+
+.divider{display:flex;align-items:center;gap:10px;margin:.85rem 0;color:var(--txt3);font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+.auth-error{background:var(--redlight);color:#9B2C2C;border:1px solid rgba(229,62,62,.25);padding:.75rem 1rem;border-radius:var(--r);font-size:13px;margin-bottom:1rem;display:none}
+.auth-error.show{display:block}
+.auth-success{background:var(--greenlight);color:#276749;border:1px solid rgba(56,161,105,.25);padding:.75rem 1rem;border-radius:var(--r);font-size:13px;margin-bottom:1rem;display:none}
+.auth-success.show{display:block}
+
+.auth-footer{text-align:center;font-size:13px;color:var(--txt3);margin-top:.75rem}
+.auth-footer a{color:var(--teal);font-weight:600}
+
+@media(max-width:860px){
+  .auth-left{display:none}
+  .auth-right{padding:1.5rem 1rem}
+}
+
+/* ─────────────────────────────────────────────
+   APP SHELL (after auth)
+───────────────────────────────────────────── */
+#appScreen{display:none;min-height:100vh}
+#appScreen.visible{display:flex}
+
+.sidebar{width:256px;min-height:100vh;background:var(--navy);position:fixed;top:0;left:0;z-index:200;display:flex;flex-direction:column;transition:transform .3s}
+.main-area{margin-left:256px;flex:1;min-height:100vh;display:flex;flex-direction:column}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-256px)}
+  .sidebar.open{transform:translateX(0)}
+  .main-area{margin-left:0}
+}
+
+.sidebar-logo{padding:1.25rem 1rem .85rem;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;gap:10px}
+.sb-logo-icon{width:34px;height:34px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:var(--navy);flex-shrink:0}
+.sb-logo-text{font-size:1.05rem;font-weight:700;color:#fff}
+.sb-logo-sub{font-size:10px;color:rgba(255,255,255,0.35);letter-spacing:.04em}
+
+nav{flex:1;padding:.5rem 0;overflow-y:auto}
+.nav-sec-label{padding:.35rem 1rem .15rem;font-size:10px;font-weight:600;color:rgba(255,255,255,0.3);letter-spacing:.08em;text-transform:uppercase}
+.nav-btn{display:flex;align-items:center;gap:10px;padding:.55rem 1rem;font-size:13.5px;color:rgba(255,255,255,0.6);border:none;background:none;width:100%;text-align:left;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.nav-btn:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.04)}
+.nav-btn.active{color:#fff;background:rgba(255,255,255,0.08);border-left-color:var(--gold)}
+.nav-btn .ni{font-size:16px;width:20px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
+
+.pro-banner{margin:.75rem;background:linear-gradient(135deg,rgba(240,165,0,0.15),rgba(240,165,0,0.05));border:1px solid rgba(240,165,0,0.25);border-radius:var(--r);padding:.85rem;display:none}
+.pro-banner.show{display:block}
+.pro-banner p{font-size:12px;color:rgba(255,255,255,0.7);margin-bottom:.6rem;line-height:1.5}
+.btn-upgrade{width:100%;background:var(--gold);color:var(--navy);border:none;padding:8px;border-radius:8px;font-size:12px;font-weight:700}
+.btn-upgrade:hover{background:var(--gold2)}
+
+.stage-wrap{padding:.75rem;border-top:1px solid rgba(255,255,255,0.07)}
+.stage-lbl{font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
+.stage-sel{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:.5rem .75rem;border-radius:var(--r);font-size:13px;font-family:var(--font)}
+.stage-sel option{background:var(--navy2)}
+
+.user-bar{display:flex;align-items:center;gap:9px;padding:.85rem 1rem;border-top:1px solid rgba(255,255,255,0.07)}
+.user-av{width:32px;height:32px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.user-av.pro-av{background:var(--gold);color:var(--navy)}
+.user-name{font-size:13px;font-weight:600;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.user-plan{font-size:10px;color:rgba(255,255,255,0.4)}
+.btn-signout{background:none;border:none;color:rgba(255,255,255,0.35);font-size:13px;cursor:pointer;padding:4px}
+.btn-signout:hover{color:rgba(255,255,255,0.7)}
+
+/* Top bar */
+.topbar{background:var(--bg);border-bottom:0.5px solid var(--bdr);padding:0 1.5rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.burger{display:none;background:none;border:none;font-size:20px;color:var(--txt2);padding:4px}
+@media(max-width:900px){.burger{display:block}}
+.topbar-title{font-size:15px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.chip-streak{display:flex;align-items:center;gap:5px;background:var(--amberlight);border:1px solid rgba(245,158,11,.2);color:#92400E;padding:4px 11px;border-radius:20px;font-size:12px;font-weight:600}
+.chip-xp{display:flex;align-items:center;gap:5px;background:#F0ECFC;border:1px solid rgba(108,79,212,.2);color:var(--purple);padding:4px 11px;border-radius:20px;font-size:12px;font-weight:600}
+.chip-pro{background:#FFFBEB;border:1px solid rgba(240,165,0,.3);color:#92400E;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700}
+
+/* Pages */
+.page{display:none;padding:1.75rem;max-width:1080px}
+.page.active{display:block}
+
+/* Cards */
+.card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:1.25rem;box-shadow:var(--sh)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.card-title{font-size:14px;font-weight:600}
+.card-link{font-size:12px;color:var(--blue);background:none;border:none;cursor:pointer}
+
+/* KPI grid */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.75rem}
+.kpi{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:1rem 1.2rem;box-shadow:var(--sh)}
+.kpi-icon{font-size:22px;margin-bottom:.5rem}
+.kpi-val{font-size:1.5rem;font-weight:700;line-height:1}
+.kpi-label{font-size:11px;color:var(--txt3);margin-top:.3rem;text-transform:uppercase;letter-spacing:.04em}
+
+/* Subject cards */
+.subjects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-bottom:1.75rem}
+.subj-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:1.1rem;cursor:pointer;transition:all .18s;box-shadow:var(--sh);position:relative;overflow:hidden}
+.subj-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.subj-card.maths::after{background:var(--blue)}
+.subj-card.science::after{background:var(--teal)}
+.subj-card.english::after{background:var(--purple)}
+.subj-card.vr::after{background:var(--gold)}
+.subj-card.nvr::after{background:#E85D3A}
+.subj-card:hover{border-color:var(--bdr2);box-shadow:var(--sh2);transform:translateY(-2px)}
+.subj-card.locked-card{opacity:.75}
+.sc-icon{font-size:26px;margin-bottom:.65rem}
+.sc-name{font-size:14px;font-weight:600;margin-bottom:.25rem}
+.sc-meta{font-size:11px;color:var(--txt3)}
+.sc-prog-row{display:flex;align-items:center;gap:7px;margin-top:.7rem}
+.sc-bar{flex:1;height:5px;background:var(--bg3);border-radius:10px;overflow:hidden}
+.sc-fill{height:100%;border-radius:10px}
+.sc-pct{font-size:11px;font-weight:600;color:var(--txt2)}
+
+/* Topics */
+.topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px;margin-bottom:1.5rem}
+.topic-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:1rem;cursor:pointer;transition:all .18s;box-shadow:var(--sh)}
+.topic-card:hover:not(.locked){border-color:var(--bdr2);box-shadow:var(--sh2);transform:translateY(-1px)}
+.topic-card.locked{opacity:.7;cursor:default}
+.tc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
+.tc-icon{font-size:20px}
+.tc-name{font-size:14px;font-weight:600;margin-bottom:.2rem}
+.tc-meta{font-size:11px;color:var(--txt3)}
+.tc-bar{height:4px;background:var(--bg3);border-radius:10px;margin-top:.7rem;overflow:hidden}
+.tc-fill{height:100%;border-radius:10px;background:var(--teal)}
+.tc-bottom{display:flex;justify-content:space-between;font-size:11px;margin-top:.4rem}
+.mastery-pct{font-weight:600}
+.mastery-pct.hi{color:var(--green)}
+.mastery-pct.mid{color:var(--amber)}
+.mastery-pct.lo{color:var(--red)}
+.mastery-pct.none{color:var(--txt3)}
+
+/* Subject tab bar */
+.subj-tabs{display:flex;gap:0;border:0.5px solid var(--bdr2);border-radius:var(--r);overflow-x:auto;margin-bottom:1.5rem;background:var(--bg2)}
+.stab{padding:.6rem 1rem;font-size:13px;font-weight:500;border:none;background:none;color:var(--txt2);cursor:pointer;white-space:nowrap;border-right:0.5px solid var(--bdr2)}
+.stab:last-child{border-right:none}
+.stab.active{background:var(--navy);color:#fff;border-radius:calc(var(--r) - 1px)}
+
+/* Question view */
+.q-wrap{display:none}
+.q-wrap.on{display:grid;grid-template-columns:1fr 300px;gap:18px;align-items:start}
+@media(max-width:820px){.q-wrap.on{display:block}}
+
+.q-topbar{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap}
+.btn-back-topics{display:flex;align-items:center;gap:5px;padding:7px 13px;background:var(--bg2);border:0.5px solid var(--bdr2);border-radius:var(--r);font-size:13px;color:var(--txt2)}
+.btn-back-topics:hover{background:var(--bg3)}
+.q-prog-track{flex:1;height:7px;background:var(--bg3);border-radius:10px;overflow:hidden;min-width:80px}
+.q-prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal2));border-radius:10px;transition:width .4s}
+.q-counter-txt{font-size:12px;color:var(--txt3);white-space:nowrap}
+
+.q-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rxl);padding:1.75rem;box-shadow:var(--sh)}
+.q-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1.1rem}
+.qtag{font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600}
+.qtag.m{background:var(--teallight);color:var(--teal2)}
+.qtag.t{background:var(--bluelight);color:#1558B0}
+.qtag.d{background:var(--amberlight);color:#92400E}
+.qtag.b{background:var(--bg3);color:var(--txt2)}
+
+.q-ctx{background:var(--bg2);border-left:3px solid var(--gold);padding:.85rem 1rem;border-radius:0 var(--r) var(--r) 0;margin-bottom:1.1rem;font-size:13.5px;color:var(--txt2);line-height:1.7;display:none}
+.q-ctx.show{display:block}
+.q-body{font-size:16px;line-height:1.8;margin-bottom:1.4rem}
+
+.mcq-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.4rem}
+.mcq-opt{display:flex;align-items:flex-start;gap:11px;padding:11px 15px;border:1.5px solid var(--bdr);border-radius:var(--r);cursor:pointer;font-size:14.5px;transition:all .15s;line-height:1.5}
+.mcq-opt:hover{border-color:var(--teal);background:rgba(0,166,126,0.03)}
+.mcq-opt.sel{border-color:var(--teal);background:rgba(0,166,126,0.06)}
+.mcq-opt.ans-ok{border-color:var(--green);background:var(--greenlight);color:#276749}
+.mcq-opt.ans-bad{border-color:var(--red);background:var(--redlight);color:#9B2C2C}
+.opt-key{min-width:26px;height:26px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:2px}
+
+.txt-ans-lbl{font-size:12px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:.45rem}
+.txt-ans{width:100%;padding:11px 15px;border:1.5px solid var(--bdr2);border-radius:var(--r);font-size:15px;background:var(--bg);margin-bottom:1.4rem;transition:border-color .15s}
+.txt-ans:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,166,126,0.1)}
+
+.act-bar{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.btn-check{background:var(--teal);color:#fff;border:none;padding:11px 24px;border-radius:var(--r);font-size:14.5px;font-weight:600;transition:background .15s}
+.btn-check:hover{background:var(--teal2)}
+.btn-check:disabled{background:var(--bg3);color:var(--txt3)}
+.btn-nxt{background:var(--bg2);color:var(--txt);border:0.5px solid var(--bdr2);padding:11px 20px;border-radius:var(--r);font-size:14px;display:none}
+.btn-nxt.on{display:inline-block}
+.btn-hint-q{background:none;border:none;font-size:13px;color:var(--blue);text-decoration:underline;padding:4px}
+
+.fb-box{margin-top:1.1rem;padding:1rem 1.25rem;border-radius:var(--rlg);display:none;line-height:1.7}
+.fb-box.on{display:block}
+.fb-box.ok{background:var(--greenlight);border:1px solid rgba(56,161,105,.25);color:#276749}
+.fb-box.bad{background:var(--redlight);border:1px solid rgba(229,62,62,.25);color:#9B2C2C}
+.fb-box.info{background:var(--bluelight);border:1px solid rgba(43,127,224,.2);color:#1558B0}
+.fb-title{font-size:15px;font-weight:700;margin-bottom:.4rem}
+.fb-sol{margin-top:.65rem;padding-top:.65rem;border-top:1px solid rgba(0,0,0,.08);font-size:13.5px}
+
+/* Side panels */
+.q-side{display:flex;flex-direction:column;gap:12px}
+.side-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:1rem;box-shadow:var(--sh)}
+.side-title{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.75rem}
+.ai-msgs{display:flex;flex-direction:column;gap:7px;max-height:220px;overflow-y:auto}
+.ai-msg{padding:.65rem .85rem;border-radius:var(--r);font-size:12.5px;line-height:1.6}
+.ai-msg.ai{background:var(--navy2);color:rgba(255,255,255,.82)}
+.ai-msg.you{background:var(--bg3);color:var(--txt2);text-align:right}
+.ai-thinking{font-size:12px;color:var(--txt3);font-style:italic;padding:.3rem 0;display:none}
+.ai-row{display:flex;gap:6px;margin-top:.5rem}
+.ai-inp{flex:1;padding:7px 10px;border:0.5px solid var(--bdr2);border-radius:var(--r);font-size:13px}
+.ai-inp:focus{outline:none;border-color:var(--teal)}
+.ai-send-btn{background:var(--teal);border:none;color:#fff;padding:7px 11px;border-radius:var(--r);font-size:13px;font-weight:600}
+
+.nav-dots-wrap{display:flex;flex-wrap:wrap;gap:5px}
+.ndot{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--bdr2);background:var(--bg2);font-size:11px;font-weight:600;color:var(--txt3);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.ndot.ok{background:var(--greenlight);border-color:rgba(56,161,105,.4);color:#276749}
+.ndot.bad{background:var(--redlight);border-color:rgba(229,62,62,.4);color:#9B2C2C}
+.ndot.cur{border-color:var(--teal);color:var(--teal2);background:var(--teallight)}
+
+/* Results screen */
+.results-hero{background:linear-gradient(135deg,var(--navy),#0d3d2e);border-radius:var(--rxl);padding:2.5rem;text-align:center;color:#fff;margin-bottom:1.75rem}
+.res-score{font-size:4rem;font-weight:700;line-height:1;margin-bottom:.25rem}
+.res-grade-txt{font-size:1.1rem;color:rgba(255,255,255,.65);margin-bottom:1.25rem}
+.res-stats{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap}
+.rs-item .v{font-size:1.35rem;font-weight:700}
+.rs-item .l{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
+
+/* Skill bars */
+.skill-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.skill-name{font-size:13px;color:var(--txt2);width:140px;flex-shrink:0}
+.skill-track{flex:1;height:7px;background:var(--bg3);border-radius:10px;overflow:hidden}
+.skill-fill{height:100%;border-radius:10px}
+.skill-pct{font-size:12px;font-weight:600;width:34px;text-align:right}
+
+/* Progress page */
+.prog-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:1.75rem}
+.sp-row{display:flex;align-items:center;gap:12px;padding:.7rem 0;border-bottom:0.5px solid var(--bdr)}
+.sp-row:last-child{border-bottom:none}
+.sp-icon{font-size:20px;width:30px;text-align:center}
+.sp-info{flex:1}
+.sp-name{font-size:14px;font-weight:600;margin-bottom:3px}
+.sp-bar-wrap{display:flex;align-items:center;gap:8px}
+.sp-bar{flex:1;height:7px;background:var(--bg3);border-radius:10px;overflow:hidden}
+.sp-fill{height:100%;border-radius:10px}
+.sp-pct{font-size:12px;font-weight:600;width:34px;text-align:right;color:var(--txt2)}
+.sp-grade{font-size:13px;font-weight:700;width:22px;text-align:center}
+.heat-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.heat-cell{aspect-ratio:1;border-radius:3px}
+
+/* Plan page */
+.plan-week{border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:1.2rem;box-shadow:var(--sh);background:var(--bg)}
+.plan-week.active-week{border-top:3px solid var(--teal)}
+.pw-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:.85rem}
+.pw-title{font-size:14px;font-weight:700}
+.plan-day{display:flex;align-items:center;gap:10px;padding:.6rem 0;border-bottom:0.5px solid var(--bdr)}
+.plan-day:last-child{border-bottom:none}
+.pd-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.pd-text{flex:1;font-size:13px}
+
+/* Paywall upgrade modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.overlay.show{display:flex}
+.modal{background:var(--bg);border-radius:var(--rxl);padding:2.5rem;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:1rem;right:1rem;background:var(--bg2);border:0.5px solid var(--bdr2);width:30px;height:30px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center}
+.modal h2{font-family:var(--serif);font-size:1.6rem;color:var(--navy);margin-bottom:.4rem;text-align:center}
+.modal .modal-sub{color:var(--txt2);font-size:14px;text-align:center;margin-bottom:1.5rem;line-height:1.7}
+.plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:1.25rem}
+.plan-box{border:1.5px solid var(--bdr2);border-radius:var(--rlg);padding:1.2rem}
+.plan-box.featured{border-color:var(--gold);background:rgba(240,165,0,0.04)}
+.plan-best{font-size:10px;font-weight:700;color:var(--gold2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px}
+.plan-name{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.plan-price{font-size:1.7rem;font-weight:700;color:var(--navy);line-height:1}
+.plan-price sub{font-size:11px;font-weight:400;color:var(--txt3)}
+.plan-price del{font-size:.85rem;color:var(--txt3);font-weight:400}
+.plan-feats{list-style:none;font-size:12.5px;color:var(--txt2);margin-top:.85rem}
+.plan-feats li{display:flex;gap:7px;margin-bottom:5px;align-items:flex-start}
+.plan-feats li::before{content:'✓';color:var(--teal);font-weight:700;flex-shrink:0}
+.btn-sub{width:100%;border:none;padding:12px;border-radius:var(--r);font-size:14px;font-weight:700;margin-top:.85rem;cursor:pointer}
+.btn-sub.navy{background:var(--navy);color:#fff}
+.btn-sub.navy:hover{background:var(--navyhover)}
+.btn-sub.gold{background:var(--gold);color:var(--navy)}
+.btn-sub.gold:hover{background:var(--gold2)}
+.modal-coupon{margin-bottom:1rem}
+.modal-coupon label{font-size:12px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:.4rem}
+.modal-trust{display:flex;justify-content:center;gap:1.25rem;font-size:12px;color:var(--txt3)}
+
+/* Loading spinner */
+.spinner{display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Misc utils */
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:11px;font-size:11px;font-weight:600}
+.chip.green{background:var(--greenlight);color:#276749}
+.chip.amber{background:var(--amberlight);color:#92400E}
+.chip.blue{background:var(--bluelight);color:#1558B0}
+.chip.gray{background:var(--bg3);color:var(--txt2)}
+.hidden{display:none!important}
+@media(max-width:700px){
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .prog-cols{grid-template-columns:1fr}
+  .plans-grid{grid-template-columns:1fr}
+  .q-side{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     AUTH SCREEN
+══════════════════════════════════════════ -->
+<div id="authScreen">
+
+  <div class="auth-left">
+    <div>
+      <div class="auth-brand">
+        <div class="auth-logo-icon">B</div>
+        <div>
+          <div class="auth-logo-text">BrightPrep</div>
+          <div class="auth-logo-sub">British Curriculum · KS2 → A-Level</div>
+        </div>
+      </div>
+      <h1>Practise like it's<br/>the <em>real exam</em></h1>
+      <p>Exam-style questions for every British curriculum stage, with AI-powered hints, worked solutions, and predicted grades.</p>
+      <div class="auth-features">
+        <div class="auth-feature"><div class="af-icon">📝</div><div class="af-text"><strong>Real exam format</strong>AQA, Edexcel & OCR-aligned questions with mark schemes</div></div>
+        <div class="auth-feature"><div class="af-icon">🤖</div><div class="af-text"><strong>AI Tutor</strong>Ask for hints and explanations on every question</div></div>
+        <div class="auth-feature"><div class="af-icon">📊</div><div class="af-text"><strong>Progress & predicted grades</strong>Topic-by-topic mastery with grade tracking</div></div>
+        <div class="auth-feature"><div class="af-icon">🎯</div><div class="af-text"><strong>Personalised revision plan</strong>Week-by-week study schedule tailored to your exam date</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="auth-stat-row">
+        <div class="auth-stat"><div class="v">500+</div><div class="l">Questions</div></div>
+        <div class="auth-stat"><div class="v">5</div><div class="l">Subjects</div></div>
+        <div class="auth-stat"><div class="v">KS2–A2</div><div class="l">All stages</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-form-wrap">
+      <div class="auth-tabs">
+        <button class="atab active" onclick="switchTab('signin')">Sign in</button>
+        <button class="atab" onclick="switchTab('signup')">Create account</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <div id="signinForm" class="auth-form">
+        <h2>Welcome back</h2>
+        <p class="auth-sub">Sign in to continue your practice.</p>
+        <div class="auth-error" id="siError"></div>
+        <div class="auth-success" id="siSuccess"></div>
+        <div class="field"><label>Email</label><input type="email" id="siEmail" placeholder="you@example.com"/></div>
+        <div class="field"><label>Password</label><input type="password" id="siPass" placeholder="Your password"/></div>
+        <button class="btn-primary" onclick="signIn()"><span id="siSpinner" class="spinner hidden"></span>Sign in</button>
+        <div class="divider">or</div>
+        <button class="btn-secondary" onclick="signInGoogle()">🔐 Continue with Google</button>
+        <div class="auth-footer"><a href="#" onclick="showForgot()">Forgot password?</a></div>
+      </div>
+
+      <!-- SIGN UP FORM -->
+      <div id="signupForm" class="auth-form hidden">
+        <h2>Create your account</h2>
+        <p class="auth-sub">Start your 7-day free trial — no card needed.</p>
+        <div class="auth-error" id="suError"></div>
+        <div class="auth-success" id="suSuccess"></div>
+        <div class="field"><label>Your name</label><input type="text" id="suName" placeholder="First name"/></div>
+        <div class="field"><label>Email</label><input type="email" id="suEmail" placeholder="you@example.com"/></div>
+        <div class="field"><label>Password</label><input type="password" id="suPass" placeholder="8+ characters"/></div>
+        <div class="field"><label>Year group</label>
+          <select id="suYear" style="width:100%;padding:11px 14px;border:1.5px solid var(--bdr2);border-radius:var(--r);font-size:15px;color:var(--txt);background:var(--bg)">
+            <option value="">Select year group…</option>
+            <option>Year 3 (Age 7–8)</option><option>Year 4 (Age 8–9)</option>
+            <option>Year 5 (Age 9–10)</option><option selected>Year 6 (Age 10–11)</option>
+            <option>Year 7</option><option>Year 8</option><option>Year 9</option>
+            <option>GCSE Year 10</option><option>GCSE Year 11</option>
+            <option>A-Level Year 12</option><option>A-Level Year 13</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:.4rem">Coupon / promo code <span style="font-weight:400;text-transform:none;color:var(--txt3)">(optional)</span></label>
+          <div class="coupon-row">
+            <input type="text" id="suCoupon" placeholder="e.g. BRIGHT50" style="text-transform:uppercase"/>
+            <button class="btn-apply-coupon" onclick="applyCoupon()">Apply</button>
+          </div>
+          <div class="coupon-status" id="couponStatus"></div>
+        </div>
+        <button class="btn-primary" onclick="signUp()"><span id="suSpinner" class="spinner hidden"></span>Create account & start free trial</button>
+        <p style="font-size:11px;color:var(--txt3);text-align:center;margin-top:.5rem">7-day free trial · No card required · Cancel any time</p>
+      </div>
+
+      <!-- FORGOT PASSWORD -->
+      <div id="forgotForm" class="auth-form hidden">
+        <h2>Reset password</h2>
+        <p class="auth-sub">We'll send a reset link to your email.</p>
+        <div class="auth-error" id="fpError"></div>
+        <div class="auth-success" id="fpSuccess"></div>
+        <div class="field"><label>Email</label><input type="email" id="fpEmail" placeholder="you@example.com"/></div>
+        <button class="btn-primary" onclick="forgotPassword()">Send reset link</button>
+        <div class="auth-footer"><a href="#" onclick="switchTab('signin')">← Back to sign in</a></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     APP SCREEN
+══════════════════════════════════════════ -->
+<div id="appScreen">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sb-logo-icon">B</div>
+      <div>
+        <div class="sb-logo-text">BrightPrep</div>
+        <div class="sb-logo-sub">British Curriculum</div>
+      </div>
+    </div>
+
+    <nav>
+      <div class="nav-sec-label">Learn</div>
+      <button class="nav-btn active" onclick="goPage('dashboard')"><span class="ni">🏠</span>Dashboard</button>
+      <button class="nav-btn" onclick="goPage('practice')"><span class="ni">📝</span>Practice</button>
+      <button class="nav-btn" onclick="goPage('mock')"><span class="ni">📄</span>Mock Papers<span class="nav-badge">New</span></button>
+      <div class="nav-sec-label" style="margin-top:.5rem">Track</div>
+      <button class="nav-btn" onclick="goPage('progress')"><span class="ni">📊</span>My Progress</button>
+      <button class="nav-btn" onclick="goPage('plan')"><span class="ni">📅</span>Revision Plan</button>
+      <div class="nav-sec-label" style="margin-top:.5rem">Account</div>
+      <button class="nav-btn" onclick="showUpgradeModal()"><span class="ni">⭐</span>Upgrade to Pro</button>
+    </nav>
+
+    <div class="pro-banner" id="proBanner">
+      <p>Unlock all 5 subjects, mock papers & AI tutor</p>
+      <button class="btn-upgrade" onclick="showUpgradeModal()">Upgrade to Pro →</button>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="stage-lbl">Year group</div>
+      <select class="stage-sel" id="stageSelect">
+        <option>Year 3 (Age 7–8)</option><option>Year 4 (Age 8–9)</option>
+        <option>Year 5 (Age 9–10)</option><option selected>Year 6 (Age 10–11)</option>
+        <option>Year 7</option><option>Year 8</option><option>Year 9</option>
+        <option>GCSE Year 10</option><option>GCSE Year 11</option>
+        <option>A-Level Year 12</option><option>A-Level Year 13</option>
+      </select>
+    </div>
+
+    <div class="user-bar">
+      <div class="user-av" id="userAv">S</div>
+      <div style="flex:1;min-width:0">
+        <div class="user-name" id="userName">Student</div>
+        <div class="user-plan" id="userPlan">Free plan</div>
+      </div>
+      <button class="btn-signout" onclick="signOut()" title="Sign out">↩</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-area">
+    <header class="topbar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="burger" onclick="toggleSidebar()">☰</button>
+        <span class="topbar-title" id="topbarTitle">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <div class="chip-streak">🔥 <span id="topStreak">0</span></div>
+        <div class="chip-xp">⚡ <span id="topXP">0</span> XP</div>
+        <div class="chip-pro hidden" id="proChip">⭐ Pro</div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div style="margin-bottom:1.5rem">
+        <h1 style="font-size:1.4rem;font-weight:700;margin-bottom:.25rem">Good day, <span id="greetName">Student</span>! 👋</h1>
+        <p style="font-size:14px;color:var(--txt2)">You have <strong>3 topics</strong> ready for today. Keep up the great work!</p>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-val" id="kpiDone">0</div><div class="kpi-label">Questions done</div></div>
+        <div class="kpi"><div class="kpi-icon">🎯</div><div class="kpi-val" id="kpiAcc">—</div><div class="kpi-label">Accuracy</div></div>
+        <div class="kpi"><div class="kpi-icon">🔥</div><div class="kpi-val" id="kpiStreak">0</div><div class="kpi-label">Day streak</div></div>
+        <div class="kpi"><div class="kpi-icon">⭐</div><div class="kpi-val" id="kpiMastered">0</div><div class="kpi-label">Topics mastered</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;margin-bottom:1.75rem">
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="card-hd"><span class="card-title">📚 Continue learning</span><button class="card-link" onclick="goPage('practice')">All topics →</button></div>
+            <div id="continueList">
+              <div style="display:flex;align-items:center;gap:10px;padding:.65rem 0;border-bottom:0.5px solid var(--bdr)"><div style="width:9px;height:9px;border-radius:50%;background:var(--blue);flex-shrink:0"></div><div style="flex:1;font-size:13px">Algebra & Equations <span style="color:var(--txt3)">· Maths</span></div><span style="font-size:11px;color:var(--txt3)">15 Qs</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:.65rem 0;border-bottom:0.5px solid var(--bdr)"><div style="width:9px;height:9px;border-radius:50%;background:var(--teal);flex-shrink:0"></div><div style="flex:1;font-size:13px">Forces & Motion <span style="color:var(--txt3)">· Science</span></div><span style="font-size:11px;color:var(--txt3)">12 Qs</span></div>
+              <div style="display:flex;align-items:center;gap:10px;padding:.65rem 0"><div style="width:9px;height:9px;border-radius:50%;background:var(--gold);flex-shrink:0"></div><div style="flex:1;font-size:13px">Fractions & Ratio <span style="color:var(--txt3)">· Maths</span></div><span style="font-size:11px;color:var(--txt3)">10 Qs</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><span class="card-title">🎯 Topic mastery — Maths</span><button class="card-link" onclick="goPage('progress')">Full breakdown →</button></div>
+            <div class="skill-row"><span class="skill-name">Number & Algebra</span><div class="skill-track"><div class="skill-fill" style="width:78%;background:var(--teal)"></div></div><span class="skill-pct" style="color:var(--teal2)">78%</span></div>
+            <div class="skill-row"><span class="skill-name">Geometry</span><div class="skill-track"><div class="skill-fill" style="width:62%;background:var(--blue)"></div></div><span class="skill-pct" style="color:var(--blue)">62%</span></div>
+            <div class="skill-row"><span class="skill-name">Statistics</span><div class="skill-track"><div class="skill-fill" style="width:45%;background:var(--amber)"></div></div><span class="skill-pct" style="color:var(--amber)">45%</span></div>
+            <div class="skill-row"><span class="skill-name">Quadratics</span><div class="skill-track"><div class="skill-fill" style="width:34%;background:var(--red)"></div></div><span class="skill-pct" style="color:var(--red)">34%</span></div>
+            <div class="skill-row"><span class="skill-name">Ratio & Proportion</span><div class="skill-track"><div class="skill-fill" style="width:88%;background:var(--green)"></div></div><span class="skill-pct" style="color:var(--green)">88%</span></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-hd"><span class="card-title">📅 Today's plan</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:.6rem 0;border-bottom:.5px solid var(--bdr)"><div style="width:9px;height:9px;border-radius:50%;background:var(--green)"></div><div style="flex:1;font-size:13px"><strong style="font-size:12px">Warm-up: 5 questions</strong><div style="font-size:11px;color:var(--txt3)">Mixed revision · 5 min</div></div><span class="chip green" style="font-size:10px">Done</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:.6rem 0;border-bottom:.5px solid var(--bdr)"><div style="width:9px;height:9px;border-radius:50%;background:var(--blue)"></div><div style="flex:1;font-size:13px"><strong style="font-size:12px">Algebra practice</strong><div style="font-size:11px;color:var(--txt3)">Weak area · 10 min</div></div><span class="chip amber" style="font-size:10px">Next</span></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:.6rem 0"><div style="width:9px;height:9px;border-radius:50%;background:var(--txt3)"></div><div style="flex:1;font-size:13px"><strong style="font-size:12px">Science: Forces</strong><div style="font-size:11px;color:var(--txt3)">New topic · 12 min</div></div><span class="chip blue" style="font-size:10px">Upcoming</span></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><span class="card-title">🏅 Predicted grades</span></div>
+            <div class="sp-row"><span class="sp-icon">📐</span><div class="sp-info"><div class="sp-name">Maths</div><div class="sp-bar-wrap"><div class="sp-bar"><div class="sp-fill" style="width:72%;background:var(--blue)"></div></div><span class="sp-pct">72%</span></div></div><span class="sp-grade" style="color:var(--blue)">6</span></div>
+            <div class="sp-row"><span class="sp-icon">🔬</span><div class="sp-info"><div class="sp-name">Science</div><div class="sp-bar-wrap"><div class="sp-bar"><div class="sp-fill" style="width:58%;background:var(--teal)"></div></div><span class="sp-pct">58%</span></div></div><span class="sp-grade" style="color:var(--teal)">5</span></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><span class="card-title">⚡ Recent activity</span></div>
+            <div style="font-size:13px;color:var(--txt2)">
+              <div style="padding:.4rem 0;border-bottom:.5px solid var(--bdr);display:flex;gap:8px"><span>✅</span>Completed Fractions — 80% score</div>
+              <div style="padding:.4rem 0;border-bottom:.5px solid var(--bdr);display:flex;gap:8px"><span>🏅</span>Earned "Algebra Ace" badge</div>
+              <div style="padding:.4rem 0;display:flex;gap:8px"><span>🔥</span>3-day practice streak!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:1rem;font-weight:700;margin-bottom:.85rem">All subjects</div>
+      <div class="subjects-grid">
+        <div class="subj-card maths" onclick="goPage('practice');setSubj('maths')"><div class="sc-icon">📐</div><div class="sc-name">Mathematics</div><div class="sc-meta">8 topics · 80 questions</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:62%;background:var(--blue)"></div></div><span class="sc-pct">62%</span></div></div>
+        <div class="subj-card science" onclick="goPage('practice');setSubj('science')"><div class="sc-icon">🔬</div><div class="sc-name">Science</div><div class="sc-meta">8 topics · 80 questions</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:48%;background:var(--teal)"></div></div><span class="sc-pct">48%</span></div></div>
+        <div class="subj-card english locked-card" onclick="requirePro()"><div class="sc-icon">📖</div><div class="sc-name">English 🔒</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%;background:var(--purple)"></div></div><span class="sc-pct" style="color:var(--txt3)">Pro</span></div></div>
+        <div class="subj-card vr locked-card" onclick="requirePro()"><div class="sc-icon">💬</div><div class="sc-name">Verbal Reasoning 🔒</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%"></div></div><span class="sc-pct" style="color:var(--txt3)">Pro</span></div></div>
+        <div class="subj-card nvr locked-card" onclick="requirePro()"><div class="sc-icon">🧩</div><div class="sc-name">Non-Verbal Reasoning 🔒</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%"></div></div><span class="sc-pct" style="color:var(--txt3)">Pro</span></div></div>
+      </div>
+    </div>
+
+    <!-- PRACTICE -->
+    <div class="page" id="page-practice">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:8px">
+        <h2 style="font-size:1.2rem;font-weight:700">Practice Questions</h2>
+      </div>
+      <div id="topicsWrap">
+        <div class="subj-tabs" id="subjTabs">
+          <button class="stab active" onclick="setSubj('maths',this)">📐 Maths</button>
+          <button class="stab" onclick="setSubj('science',this)">🔬 Science</button>
+          <button class="stab" onclick="setSubj('english',this)">📖 English</button>
+          <button class="stab" onclick="setSubj('verbal',this)">💬 Verbal</button>
+          <button class="stab" onclick="setSubj('nvr',this)">🧩 Non-Verbal</button>
+        </div>
+        <div id="topicsContainer"></div>
+      </div>
+
+      <!-- QUESTION SHELL -->
+      <div class="q-wrap" id="qShell">
+        <div>
+          <div class="q-topbar">
+            <button class="btn-back-topics" onclick="backToTopics()">← Topics</button>
+            <div class="q-prog-track"><div class="q-prog-fill" id="qProgFill" style="width:0%"></div></div>
+            <span class="q-counter-txt" id="qCounterTxt">1 / 5</span>
+          </div>
+          <div class="q-card">
+            <div class="q-tags" id="qTags"></div>
+            <div class="q-ctx" id="qCtx"></div>
+            <div class="q-body" id="qBody"></div>
+            <div id="mcqArea" class="hidden"><div class="mcq-list" id="mcqList"></div></div>
+            <div id="txtArea" class="hidden"><label class="txt-ans-lbl">Your answer</label><input type="text" class="txt-ans" id="txtAns" placeholder="Type your answer…"/></div>
+            <div class="act-bar">
+              <button class="btn-check" id="checkBtn" onclick="checkAnswer()">Check answer</button>
+              <button class="btn-nxt" id="nextBtn" onclick="nextQ()">Next →</button>
+              <button class="btn-hint-q" onclick="doHint()">💡 Hint</button>
+            </div>
+            <div class="fb-box" id="fbBox"></div>
+          </div>
+        </div>
+        <div class="q-side">
+          <div class="side-card">
+            <div class="side-title">🤖 AI Tutor</div>
+            <div class="ai-msgs" id="aiMsgs"><div class="ai-msg ai">Hi! Ask me anything about this question.</div></div>
+            <div class="ai-thinking" id="aiThinking">Thinking…</div>
+            <div class="ai-row"><input type="text" class="ai-inp" id="aiInp" placeholder="Ask a question…" onkeydown="if(event.key==='Enter')sendToAI()"/><button class="ai-send-btn" onclick="sendToAI()">→</button></div>
+          </div>
+          <div class="side-card"><div class="side-title">Navigator</div><div class="nav-dots-wrap" id="navDots"></div></div>
+          <div class="side-card"><div class="side-title">📌 Exam tip</div><div style="font-size:12.5px;color:var(--txt2);line-height:1.65" id="examTip">Always show your working — you can earn method marks even if the final answer is wrong.</div></div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="hidden" id="resultsScreen">
+        <div class="results-hero"><div class="res-score" id="resScore">0%</div><div class="res-grade-txt" id="resGrade">Keep practising!</div><div class="res-stats"><div class="rs-item"><div class="v" id="resCorrect">0</div><div class="l">Correct</div></div><div class="rs-item"><div class="v" id="resWrong">0</div><div class="l">Wrong</div></div><div class="rs-item"><div class="v" id="resMarks">0</div><div class="l">Marks</div></div></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:1.5rem">
+          <div class="card"><div class="card-hd"><span class="card-title">💡 Areas to improve</span></div><div id="improveTxt" style="font-size:14px;color:var(--txt2);line-height:1.75"></div></div>
+          <div class="card"><div class="card-hd"><span class="card-title">✅ What went well</span></div><div id="wellTxt" style="font-size:14px;color:var(--txt2);line-height:1.75"></div></div>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn-check" onclick="backToTopics()">Try another topic</button><button class="btn-nxt on" onclick="showUpgradeModal()">Unlock more with Pro →</button></div>
+      </div>
+    </div>
+
+    <!-- MOCK PAPERS -->
+    <div class="page" id="page-mock">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:.35rem">Mock Papers</h2>
+      <p style="color:var(--txt2);font-size:14px;margin-bottom:1.5rem">Full timed exam papers with instant marking and feedback.</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px">
+        <div class="card" style="cursor:pointer" onclick="alert('Mock paper mode — coming soon!')">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.85rem"><span style="font-size:26px">📐</span><span class="chip green">Free</span></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:.25rem">KS2 Maths Paper 1</div>
+          <div style="font-size:12px;color:var(--txt3);display:flex;gap:12px;margin-bottom:1rem"><span>⏱ 30 min</span><span>📝 20 Qs</span></div>
+          <button style="width:100%;background:var(--navy);color:#fff;border:none;padding:9px;border-radius:var(--r);font-size:13px;font-weight:600">Start paper</button>
+        </div>
+        <div class="card" style="opacity:.7;cursor:pointer" onclick="requirePro()">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.85rem"><span style="font-size:26px">🔬</span><span class="chip amber">Pro</span></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:.25rem">GCSE Science Higher</div>
+          <div style="font-size:12px;color:var(--txt3);display:flex;gap:12px;margin-bottom:1rem"><span>⏱ 75 min</span><span>📝 40 Qs</span></div>
+          <button style="width:100%;background:var(--bg3);color:var(--txt3);border:none;padding:9px;border-radius:var(--r);font-size:13px">🔒 Pro only</button>
+        </div>
+        <div class="card" style="opacity:.7;cursor:pointer" onclick="requirePro()">
+          <div style="display:flex;justify-content:space-between;margin-bottom:.85rem"><span style="font-size:26px">💬</span><span class="chip amber">Pro</span></div>
+          <div style="font-size:15px;font-weight:700;margin-bottom:.25rem">11+ Verbal Reasoning</div>
+          <div style="font-size:12px;color:var(--txt3);display:flex;gap:12px;margin-bottom:1rem"><span>⏱ 50 min</span><span>📝 80 Qs</span></div>
+          <button style="width:100%;background:var(--bg3);color:var(--txt3);border:none;padding:9px;border-radius:var(--r);font-size:13px">🔒 Pro only</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="page" id="page-progress">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1.25rem">My Progress</h2>
+      <div class="prog-cols">
+        <div class="card">
+          <div class="card-hd"><span class="card-title">📊 Subject performance</span></div>
+          <div class="sp-row"><span class="sp-icon">📐</span><div class="sp-info"><div class="sp-name">Mathematics</div><div class="sp-bar-wrap"><div class="sp-bar"><div class="sp-fill" style="width:72%;background:var(--blue)"></div></div><span class="sp-pct">72%</span></div></div><span class="sp-grade" style="color:var(--blue)">Grade 6</span></div>
+          <div class="sp-row"><span class="sp-icon">🔬</span><div class="sp-info"><div class="sp-name">Science</div><div class="sp-bar-wrap"><div class="sp-bar"><div class="sp-fill" style="width:58%;background:var(--teal)"></div></div><span class="sp-pct">58%</span></div></div><span class="sp-grade" style="color:var(--teal)">Grade 5</span></div>
+          <div class="sp-row"><span class="sp-icon">📖</span><div class="sp-info"><div class="sp-name">English <span class="chip blue" style="font-size:10px">Pro</span></div><div class="sp-bar-wrap"><div class="sp-bar"><div class="sp-fill" style="width:81%;background:var(--purple)"></div></div><span class="sp-pct">81%</span></div></div><span class="sp-grade" style="color:var(--purple)">Grade 7</span></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><span class="card-title">📅 30-day activity</span></div>
+          <div class="heat-grid" id="heatGrid"></div>
+          <div style="display:flex;align-items:center;gap:7px;margin-top:.75rem;font-size:11px;color:var(--txt3)"><span>Less</span><div style="width:11px;height:11px;border-radius:2px;background:var(--bg3)"></div><div style="width:11px;height:11px;border-radius:2px;background:#9AE6B4"></div><div style="width:11px;height:11px;border-radius:2px;background:#38A169"></div><span>More</span></div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-hd"><span class="card-title">🎯 Topic breakdown — Maths</span></div>
+        <div class="skill-row"><span class="skill-name">Number & Algebra</span><div class="skill-track"><div class="skill-fill" style="width:78%;background:var(--teal)"></div></div><span class="skill-pct" style="color:var(--teal2)">78%</span></div>
+        <div class="skill-row"><span class="skill-name">Quadratics</span><div class="skill-track"><div class="skill-fill" style="width:34%;background:var(--red)"></div></div><span class="skill-pct" style="color:var(--red)">34%</span></div>
+        <div class="skill-row"><span class="skill-name">Trigonometry</span><div class="skill-track"><div class="skill-fill" style="width:52%;background:var(--amber)"></div></div><span class="skill-pct" style="color:var(--amber)">52%</span></div>
+        <div class="skill-row"><span class="skill-name">Circle Theorems</span><div class="skill-track"><div class="skill-fill" style="width:28%;background:var(--red)"></div></div><span class="skill-pct" style="color:var(--red)">28%</span></div>
+        <div class="skill-row"><span class="skill-name">Statistics</span><div class="skill-track"><div class="skill-fill" style="width:45%;background:var(--amber)"></div></div><span class="skill-pct" style="color:var(--amber)">45%</span></div>
+        <div class="skill-row"><span class="skill-name">Number & Surds</span><div class="skill-track"><div class="skill-fill" style="width:91%;background:var(--green)"></div></div><span class="skill-pct" style="color:var(--green)">91%</span></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><span class="card-title">💡 AI recommendations</span></div>
+        <div style="font-size:14px;color:var(--txt2);line-height:1.85">
+          🔴 <strong>Circle Theorems (28%)</strong> — Review the 6 key theorems. Try 5 questions today.<br/>
+          🔴 <strong>Quadratics (34%)</strong> — Focus on completing the square and the quadratic formula.<br/>
+          🟠 <strong>Statistics (45%)</strong> — Histograms and IQR are your weakest sub-topics.<br/>
+          ✅ You're strong in Number & Surds and Ratio. Keep these sharp with 2–3 questions per week.
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAN -->
+    <div class="page" id="page-plan">
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:.35rem">Revision Plan</h2>
+      <p style="font-size:14px;color:var(--txt2);margin-bottom:1.5rem">Personalised week-by-week schedule based on your performance and exam date.</p>
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-hd"><span class="card-title">⚙️ Plan settings</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+          <div><div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;margin-bottom:.35rem">Exam date</div><input type="date" style="width:100%;padding:8px 12px;border:1px solid var(--bdr2);border-radius:var(--r);font-size:13px"/></div>
+          <div><div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;margin-bottom:.35rem">Daily time</div><select style="width:100%;padding:8px 12px;border:1px solid var(--bdr2);border-radius:var(--r);font-size:13px;font-family:var(--font)"><option>15 minutes</option><option selected>30 minutes</option><option>1 hour</option></select></div>
+          <div><div style="font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;margin-bottom:.35rem">Focus</div><select style="width:100%;padding:8px 12px;border:1px solid var(--bdr2);border-radius:var(--r);font-size:13px;font-family:var(--font)"><option selected>Weakest first</option><option>Balanced</option></select></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+        <div class="plan-week active-week"><div class="pw-hd"><span class="pw-title">Week 1 · Foundations</span><span class="chip green">Current</span></div><div class="plan-day"><div class="pd-dot" style="background:var(--green)"></div><div class="pd-text">Mon: Number & Place Value (15 Qs)</div><span class="chip green" style="font-size:10px">Done</span></div><div class="plan-day"><div class="pd-dot" style="background:var(--green)"></div><div class="pd-text">Tue: Fractions & Decimals (12 Qs)</div><span class="chip green" style="font-size:10px">Done</span></div><div class="plan-day"><div class="pd-dot" style="background:var(--blue)"></div><div class="pd-text">Wed: Algebra Basics (15 Qs)</div><span class="chip amber" style="font-size:10px">Today</span></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Thu: Cell Biology (10 Qs)</div></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Fri: Mixed review (20 Qs)</div></div></div>
+        <div class="plan-week" style="opacity:.75"><div class="pw-hd"><span class="pw-title">Week 2 · Core skills</span><span class="chip blue">Upcoming</span></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Mon: Quadratics (15 Qs)</div></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Tue: Trigonometry (12 Qs)</div></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Wed: Atomic Structure (12 Qs)</div></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Fri: Mock test (30 min)</div></div></div>
+        <div class="plan-week" style="opacity:.55"><div class="pw-hd"><span class="pw-title">Week 3 · Exam practice</span><span class="chip blue">Upcoming</span></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Daily timed past papers</div></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Weak area review</div></div><div class="plan-day"><div class="pd-dot" style="background:var(--txt3)"></div><div class="pd-text">Fri: Full mock exam</div></div></div>
+      </div>
+    </div>
+
+  </div><!-- main-area -->
+</div><!-- appScreen -->
+
+<!-- UPGRADE MODAL -->
+<div class="overlay" id="upgradeOverlay" onclick="if(event.target===this)closeUpgrade()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeUpgrade()">✕</button>
+    <div style="text-align:center;font-size:2rem;margin-bottom:.75rem">🌟</div>
+    <h2>Unlock your full potential</h2>
+    <p class="modal-sub">Get unlimited questions, mock papers, AI tutor, and predicted grades across all 5 subjects.</p>
+
+    <!-- Coupon code input in modal -->
+    <div class="modal-coupon">
+      <label>Promo code <span style="font-weight:400;text-transform:none;font-size:11px;color:var(--txt3)">(optional — applies at checkout)</span></label>
+      <div class="coupon-row"><input type="text" id="modalCoupon" placeholder="e.g. BRIGHT50" style="text-transform:uppercase"/><button class="btn-apply-coupon" onclick="previewCoupon()">Preview</button></div>
+      <div class="coupon-status" id="modalCouponStatus"></div>
+    </div>
+
+    <div class="plans-grid">
+      <div class="plan-box">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-price">£9.99<sub>/mo</sub></div>
+        <ul class="plan-feats"><li>All 5 subjects</li><li>Unlimited questions</li><li>AI Tutor on every Q</li><li>Progress tracking</li><li>3 mock papers/mo</li></ul>
+        <button class="btn-sub navy" onclick="startCheckout('monthly')">Start free trial</button>
+      </div>
+      <div class="plan-box featured">
+        <div class="plan-best">Most popular · save 35%</div>
+        <div class="plan-name">Annual</div>
+        <div class="plan-price">£77.99<sub>/yr</sub> <del>£119.88</del></div>
+        <ul class="plan-feats"><li>Everything in monthly</li><li>Unlimited mock papers</li><li>Predicted grades</li><li>Revision plan</li><li>Verbal & NVR reasoning</li><li>Printable papers</li></ul>
+        <button class="btn-sub gold" onclick="startCheckout('annual')">Best value — start free</button>
+      </div>
+    </div>
+    <div class="modal-trust"><span>✓ 7-day free trial</span><span>✓ Cancel any time</span><span>✓ Secure via Stripe</span></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+// ─── CONFIG ───────────────────────────────────────
+// 🔧 Replace these with your actual keys after setup
+const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+
+// Coupon codes handled client-side for UX preview
+// Real validation happens server-side via Stripe
+const VALID_COUPONS = {
+  'BRIGHT50': { label: '50% off first 3 months', type: 'percent' },
+  'BRIGHT100': { label: '100% off — completely free!', type: 'free' },
+  'EARLYBIRD': { label: '30% off annual plan', type: 'percent' },
+  'TEACHER': { label: 'Free 1-month trial', type: 'free' },
+  'SCHOOL2025': { label: '40% off for schools', type: 'percent' },
+};
+
+// ─── SUPABASE CLIENT ──────────────────────────────
+let supabase = null;
+let currentUser = null;
+let isPro = false;
+
+// initSupabase and session handling moved to BOOT section below
+
+async function loadProfile() {
+  if (!supabase || !currentUser) return;
+  const { data } = await supabase
+    .from('profiles')
+    .select('name, is_pro, plan')
+    .eq('id', currentUser.id)
+    .single();
+  if (data) {
+    isPro = data.is_pro || false;
+    updateUserUI(data.name || currentUser.email, data.plan || 'free');
+  }
+}
+
+// ─── AUTH FUNCTIONS ───────────────────────────────
+function switchTab(tab) {
+  const tabs = ['signin','signup','forgot'];
+  tabs.forEach(t => {
+    document.getElementById(t+'Form').classList.toggle('hidden', t !== tab);
+  });
+  document.querySelectorAll('.atab').forEach((b,i) => {
+    b.classList.toggle('active', (i===0 && tab==='signin') || (i===1 && tab==='signup'));
+  });
+}
+
+function showForgot() {
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
+  document.getElementById('forgotForm').classList.remove('hidden');
+}
+
+async function signIn() {
+  const email = document.getElementById('siEmail').value.trim();
+  const pass  = document.getElementById('siPass').value;
+  const errEl = document.getElementById('siError');
+  const spinner = document.getElementById('siSpinner');
+
+  if (!email || !pass) { showErr(errEl, 'Please fill in all fields.'); return; }
+  if (!supabase) { showDemoApp(); return; } // Demo mode
+
+  spinner.classList.remove('hidden');
+  const { error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  spinner.classList.add('hidden');
+
+  if (error) showErr(errEl, error.message);
+}
+
+async function signUp() {
+  const name  = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim();
+  const pass  = document.getElementById('suPass').value;
+  const year  = document.getElementById('suYear').value;
+  const coupon = document.getElementById('suCoupon').value.trim().toUpperCase();
+  const errEl = document.getElementById('suError');
+  const sucEl = document.getElementById('suSuccess');
+  const spinner = document.getElementById('suSpinner');
+
+  if (!name || !email || !pass) { showErr(errEl, 'Please fill in all required fields.'); return; }
+  if (pass.length < 8) { showErr(errEl, 'Password must be at least 8 characters.'); return; }
+  if (!supabase) { showDemoApp(); return; }
+
+  spinner.classList.remove('hidden');
+
+  const { data, error } = await supabase.auth.signUp({
+    email, password: pass,
+    options: {
+      data: { name, year_group: year, coupon_code: coupon },
+      emailRedirectTo: window.location.origin,
+    }
+  });
+
+  spinner.classList.add('hidden');
+
+  if (error) { showErr(errEl, error.message); return; }
+
+  // Create profile row
+  if (data?.user) {
+    await supabase.from('profiles').upsert({
+      id: data.user.id, name, year_group: year,
+      is_pro: false, plan: 'free',
+      coupon_used: coupon || null,
+      created_at: new Date().toISOString(),
+    });
+  }
+
+  errEl.classList.remove('show');
+  sucEl.textContent = '✅ Account created! Check your email to confirm, then sign in.';
+  sucEl.classList.add('show');
+}
+
+async function signInGoogle() {
+  if (!supabase) { showDemoApp(); return; }
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.origin }
+  });
+}
+
+async function forgotPassword() {
+  const email = document.getElementById('fpEmail').value.trim();
+  const errEl = document.getElementById('fpError');
+  const sucEl = document.getElementById('fpSuccess');
+  if (!email) { showErr(errEl, 'Please enter your email.'); return; }
+  if (!supabase) return;
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/reset-password.html',
+  });
+  if (error) showErr(errEl, error.message);
+  else {
+    errEl.classList.remove('show');
+    sucEl.textContent = '✅ Password reset link sent! Check your email.';
+    sucEl.classList.add('show');
+  }
+}
+
+async function signOut() {
+  if (supabase) await supabase.auth.signOut();
+  currentUser = null; isPro = false;
+  showAuthScreen();
+}
+
+function showErr(el, msg) { el.textContent = msg; el.classList.add('show'); }
+
+// ─── COUPON PREVIEW ───────────────────────────────
+function applyCoupon() {
+  const code = document.getElementById('suCoupon').value.trim().toUpperCase();
+  const statusEl = document.getElementById('couponStatus');
+  if (VALID_COUPONS[code]) {
+    statusEl.textContent = '✅ ' + code + ': ' + VALID_COUPONS[code].label;
+    statusEl.className = 'coupon-status ok';
+  } else if (code) {
+    statusEl.textContent = '❌ Code "' + code + '" is invalid or expired.';
+    statusEl.className = 'coupon-status bad';
+  }
+}
+
+function previewCoupon() {
+  const code = document.getElementById('modalCoupon').value.trim().toUpperCase();
+  const statusEl = document.getElementById('modalCouponStatus');
+  if (VALID_COUPONS[code]) {
+    statusEl.textContent = '✅ ' + code + ': ' + VALID_COUPONS[code].label + ' — will be applied at checkout.';
+    statusEl.className = 'coupon-status ok';
+  } else if (code) {
+    statusEl.textContent = '❌ Code "' + code + '" is invalid.';
+    statusEl.className = 'coupon-status bad';
+  }
+}
+
+// ─── STRIPE CHECKOUT ──────────────────────────────
+async function startCheckout(plan) {
+  const coupon = document.getElementById('modalCoupon').value.trim().toUpperCase();
+  if (!currentUser) { closeUpgrade(); switchTab('signup'); return; }
+
+  // Call our Netlify function
+  try {
+    const res = await fetch('/api/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        plan,
+        userId: currentUser.id,
+        userEmail: currentUser.email,
+        couponCode: coupon,
+      }),
+    });
+    const { url, error } = await res.json();
+    if (error) { alert('Checkout error: ' + error); return; }
+    window.location.href = url; // Redirect to Stripe Checkout
+  } catch (e) {
+    alert('Could not connect to payment service. Please try again.');
+  }
+}
+
+// ─── SCREEN SWITCHES ──────────────────────────────
+function showAuthScreen() {
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('appScreen').classList.remove('visible');
+}
+
+function showApp() {
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.add('visible');
+  if (currentUser) {
+    const name = currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || 'Student';
+    updateUserUI(name, isPro ? 'Pro' : 'Free plan');
+  }
+  renderTopics();
+  buildHeatmap();
+}
+
+function showDemoApp() {
+  // Demo mode — no Supabase configured yet
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('appScreen').classList.add('visible');
+  updateUserUI('Demo User', 'Demo mode');
+  renderTopics();
+  buildHeatmap();
+}
+
+function updateUserUI(name, plan) {
+  document.getElementById('userName').textContent = name;
+  document.getElementById('userPlan').textContent = plan;
+  document.getElementById('greetName').textContent = name.split(' ')[0];
+  document.getElementById('userAv').textContent = name.charAt(0).toUpperCase();
+  if (isPro) {
+    document.getElementById('userAv').classList.add('pro-av');
+    document.getElementById('proChip').classList.remove('hidden');
+    document.getElementById('proBanner').classList.remove('show');
+  } else {
+    document.getElementById('proBanner').classList.add('show');
+  }
+}
+
+// ─── NAVIGATION ───────────────────────────────────
+const PAGE_TITLES = { dashboard:'Dashboard', practice:'Practice Questions', mock:'Mock Papers', progress:'My Progress', plan:'Revision Plan' };
+
+function goPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('topbarTitle').textContent = PAGE_TITLES[id] || id;
+  document.querySelectorAll('.nav-btn').forEach(b => {
+    if (b.textContent.toLowerCase().includes(id === 'dashboard' ? 'dashboard' : id === 'practice' ? 'practice' : id === 'mock' ? 'mock' : id === 'progress' ? 'progress' : 'plan'))
+      b.classList.add('active');
+  });
+  if (id === 'practice') renderTopics();
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+function showUpgradeModal() { document.getElementById('upgradeOverlay').classList.add('show'); }
+function closeUpgrade() { document.getElementById('upgradeOverlay').classList.remove('show'); }
+function requirePro() { if (!isPro) showUpgradeModal(); }
+
+// ─── QUESTION BANK (compact) ─────────────────────
+const QB = {
+  maths: {
+    sections: [
+      { heading:'Foundation — free', free:true, topics:[
+        { id:'num', name:'Number & Algebra', icon:'🔢', qs:[
+          {t:'Solve: <strong>5x − 3 = 22</strong>',type:'text',ans:'5',marks:2,diff:'Foundation',board:'AQA',sol:'5x = 25 → x = 5.',tip:'Add 3 to both sides, then divide by 5.'},
+          {t:'Expand and simplify: <strong>4(3x − 2) − 5x</strong>',type:'text',ans:'7x-8',marks:2,diff:'Foundation',board:'AQA',sol:'12x − 8 − 5x = 7x − 8.'},
+          {t:'What is the nth term of: 5, 9, 13, 17…?',type:'mcq',opts:['4n+1','5n-1','4n-1','3n+2'],ans:0,marks:2,diff:'Foundation',board:'AQA',sol:'Difference = 4. When n=1: 4+1=5 ✓. nth term = 4n+1.'},
+          {t:'Factorise: <strong>6x² − 9x</strong>',type:'text',ans:'3x(2x-3)',marks:2,diff:'Foundation',board:'Edexcel',sol:'HCF = 3x. Answer: 3x(2x − 3).'},
+          {t:'If f(x) = 3x² − 2, find f(3).',type:'text',ans:'25',marks:2,diff:'Foundation',board:'AQA',sol:'f(3) = 3(9) − 2 = 27 − 2 = 25.'},
+        ]},
+        { id:'frac', name:'Fractions & Percentages', icon:'½', qs:[
+          {t:'Calculate: <strong>¾ × 2⅔</strong>',type:'text',ans:'2',marks:2,diff:'Foundation',board:'AQA',sol:'3/4 × 8/3 = 24/12 = 2.'},
+          {t:'Increase £360 by <strong>25%</strong>.',type:'text',ans:'450',marks:2,diff:'Foundation',board:'AQA',sol:'25% of 360 = 90. 360 + 90 = £450.'},
+          {t:'What is 35% of 240?',type:'text',ans:'84',marks:2,diff:'Foundation',board:'Edexcel',sol:'0.35 × 240 = 84.'},
+          {t:'Share 420 in the ratio 2:5. Find the larger share.',type:'text',ans:'300',marks:3,diff:'Foundation',board:'AQA',sol:'Total parts = 7. One part = 60. Larger = 5 × 60 = 300.'},
+          {t:'Find the original price if after 20% off it costs £56.',type:'text',ans:'70',marks:3,diff:'Higher',board:'Edexcel',sol:'0.8 × original = 56. Original = 56 ÷ 0.8 = £70.'},
+        ]},
+      ]},
+      { heading:'Higher topics — Pro', free:false, topics:[
+        { id:'quad', name:'Quadratics', icon:'📈', qs:[
+          {t:'Solve: <strong>x² − 7x + 10 = 0</strong>',type:'text',ans:'x=2 x=5',marks:3,diff:'Higher',board:'AQA',sol:'(x−2)(x−5) = 0 → x=2 or x=5.'},
+          {t:'Complete the square: <strong>x² + 10x + 3</strong>',type:'text',ans:'(x+5)²-22',marks:3,diff:'Higher',board:'Edexcel',sol:'(x+5)² − 25 + 3 = (x+5)² − 22.'},
+          {t:'The equation x² + kx + 16 = 0 has equal roots. Find k.',type:'text',ans:'8 or -8',marks:3,diff:'Higher',board:'AQA',sol:'Discriminant = 0: k² − 64 = 0 → k = ±8.'},
+        ]},
+        { id:'trig', name:'Trigonometry', icon:'📐', qs:[
+          {t:'In a right triangle, opposite = 7, hypotenuse = 25. Find sin θ.',type:'text',ans:'7/25',marks:2,diff:'Higher',board:'AQA',sol:'sin θ = opposite/hypotenuse = 7/25.'},
+          {t:'Solve 0°–360°: <strong>cos x = 0.5</strong>',type:'text',ans:'60° and 300°',marks:3,diff:'Higher',board:'Edexcel',sol:'cos⁻¹(0.5) = 60°. Second solution = 360° − 60° = 300°.'},
+          {t:'Find the area of a triangle with sides 6, 9 and included angle 50°.',type:'text',ans:'20.7',marks:3,diff:'Higher',board:'AQA',sol:'Area = ½ × 6 × 9 × sin50° = 27 × 0.766 ≈ 20.7 cm².'},
+        ]},
+      ]},
+    ]
+  },
+  science: {
+    sections: [
+      { heading:'Foundation — free', free:true, topics:[
+        { id:'forces', name:'Forces & Motion', icon:'⚡', qs:[
+          {t:'A 3 kg object accelerates at 5 m/s². Find the resultant force.',type:'text',ans:'15',marks:2,diff:'Foundation',board:'AQA',sol:'F = ma = 3 × 5 = 15 N.'},
+          {t:'State Newton\'s First Law.',type:'text',ans:'object at rest stays at rest unless acted on by resultant force',marks:2,diff:'Foundation',board:'AQA',sol:'An object remains at rest or in uniform motion unless acted upon by a resultant (net) force.'},
+          {t:'Calculate the KE of a 4 kg ball moving at 5 m/s.',type:'text',ans:'50',marks:2,diff:'Foundation',board:'AQA',sol:'KE = ½mv² = ½ × 4 × 25 = 50 J.'},
+          {t:'A falling object reaches terminal velocity. What can you say about the forces?',type:'mcq',opts:['Weight > drag','Drag > weight','Weight = drag','No forces act'],ans:2,marks:2,diff:'Foundation',board:'AQA',sol:'At terminal velocity, acceleration = 0, so resultant force = 0. Weight equals drag.'},
+          {t:'What is momentum? Write the formula.',type:'text',ans:'mass times velocity p=mv',marks:2,diff:'Foundation',board:'Edexcel',sol:'Momentum (p) = mass (m) × velocity (v). Unit: kg m/s.'},
+        ]},
+        { id:'atoms', name:'Atomic Structure', icon:'⚛️', qs:[
+          {t:'An atom has 19 protons and 20 neutrons. What is its mass number?',type:'text',ans:'39',marks:1,diff:'Foundation',board:'AQA',sol:'Mass number = protons + neutrons = 19 + 20 = 39. (Potassium-39.)'},
+          {t:'Why are noble gases unreactive?',type:'mcq',opts:['They are gases','Full outer shell','No neutrons','They are very heavy'],ans:1,marks:2,diff:'Foundation',board:'AQA',sol:'Noble gases have a full outer electron shell — a stable configuration with no tendency to gain or lose electrons.'},
+          {t:'What is the charge of an electron?',type:'mcq',opts:['+1','0','−1','−2'],ans:2,marks:1,diff:'Foundation',board:'AQA',sol:'Electrons have a charge of −1 (relative).'},
+          {t:'Define relative atomic mass.',type:'text',ans:'weighted average mass of isotopes relative to carbon-12',marks:2,diff:'Higher',board:'Edexcel',sol:'The weighted mean mass of an atom relative to one twelfth the mass of a carbon-12 atom.'},
+        ]},
+      ]},
+      { heading:'Higher topics — Pro', free:false, topics:[
+        { id:'genetics', name:'Genetics', icon:'🧬', qs:[
+          {t:'Two Bb parents have children. What % have genotype bb?',type:'text',ans:'25',marks:3,diff:'Foundation',board:'AQA',sol:'Bb × Bb → BB, Bb, Bb, bb. Only bb = 1/4 = 25%.'},
+          {t:'What is a mutation?',type:'text',ans:'change in DNA sequence',marks:2,diff:'Foundation',board:'AQA',sol:'A mutation is a random change in the DNA base sequence of a gene.'},
+        ]},
+      ]},
+    ]
+  },
+  english: { sections:[{ heading:'All topics — Pro', free:false, topics:[{ id:'lang', name:'Language Analysis', icon:'📖', qs:[{t:'What effect does alliteration create?',type:'text',ans:'rhythm emphasis draws attention',marks:2,diff:'Foundation',board:'AQA',sol:'Alliteration (repeating consonant sounds) creates rhythm, emphasis and makes phrases memorable.'}]}]}]},
+  verbal:  { sections:[{ heading:'All topics — Pro', free:false, topics:[{ id:'vr1', name:'Codes & Analogies', icon:'💬', qs:[{t:'If CAT = DBU, what does DOG equal?',type:'text',ans:'EPH',marks:1,diff:'Foundation',board:'11+',sol:'Each letter +1: D→E, O→P, G→H = EPH.'}]}]}]},
+  nvr:     { sections:[{ heading:'All topics — Pro', free:false, topics:[{ id:'nvr1', name:'Pattern Sequences', icon:'🧩', qs:[{t:'Which pattern comes next in the sequence? (rotating square, +1 side each step)',type:'mcq',opts:['Pentagon','Hexagon','Triangle','Circle'],ans:0,marks:1,diff:'Foundation',board:'11+',sol:'The sequence adds one side each step. After square (4 sides) comes pentagon (5 sides).'}]}]}]},
+};
+
+// ─── APP STATE ────────────────────────────────────
+let S = {
+  subj:'maths', qList:[], qIdx:0,
+  sessionOk:0, sessionTotal:0,
+  totalDone:0, totalOk:0, xp:0, streak:0, mastered:0,
+  selOpt:null, answered:false, startTime:null, qResults:[],
+};
+
+// ─── TOPIC RENDERING ──────────────────────────────
+function setSubj(sub, btn) {
+  S.subj = sub;
+  if (btn) {
+    document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  renderTopics();
+}
+
+function renderTopics() {
+  document.getElementById('topicsWrap').style.display = 'block';
+  document.getElementById('qShell').classList.remove('on');
+  document.getElementById('resultsScreen').classList.add('hidden');
+
+  const subj = QB[S.subj];
+  if (!subj) return;
+
+  let html = '';
+  subj.sections.forEach(sec => {
+    html += `<div style="margin-bottom:1.5rem"><h3 style="font-size:12px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.85rem">${sec.heading}</h3><div class="topics-grid">`;
+    sec.topics.forEach(tp => {
+      const canAccess = sec.free || isPro;
+      const mastery = canAccess ? Math.floor(Math.random() * 80) + 10 : 0;
+      const col = mastery >= 80 ? 'hi' : mastery >= 50 ? 'mid' : 'lo';
+      html += `<div class="topic-card${canAccess ? '' : ' locked'}" onclick="${canAccess ? `startTopic('${S.subj}','${tp.id}')` : 'requirePro()'}">
+        <div class="tc-top"><span class="tc-icon">${tp.icon}</span>${canAccess ? '' : '<span style="font-size:14px;color:var(--txt3)">🔒</span>'}</div>
+        <div class="tc-name">${tp.name}</div>
+        <div class="tc-meta">${tp.qs.length} questions</div>
+        <div class="tc-bar"><div class="tc-fill" style="width:${mastery}%"></div></div>
+        <div class="tc-bottom"><span class="mastery-pct ${canAccess ? col : 'none'}">${canAccess ? mastery + '% mastery' : 'Locked'}</span><span style="font-size:11px;color:var(--txt3)">${tp.qs.length} Qs</span></div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  document.getElementById('topicsContainer').innerHTML = html;
+}
+
+// ─── QUESTION SESSION ────────────────────────────
+function startTopic(sub, topicId) {
+  const subj = QB[sub];
+  let qs = null;
+  subj.sections.forEach(s => s.topics.forEach(t => { if (t.id === topicId) qs = t.qs; }));
+  if (!qs || !qs.length) return;
+
+  S.qList = qs; S.qIdx = 0; S.sessionOk = 0; S.sessionTotal = 0;
+  S.answered = false; S.selOpt = null; S.qResults = qs.map(() => null);
+  S.startTime = Date.now();
+
+  document.getElementById('topicsWrap').style.display = 'none';
+  document.getElementById('resultsScreen').classList.add('hidden');
+  document.getElementById('qShell').classList.add('on');
+  document.getElementById('aiMsgs').innerHTML = '<div class="ai-msg ai">Hi! Ask me anything about this question.</div>';
+  renderQ();
+}
+
+function renderQ() {
+  if (S.qIdx >= S.qList.length) { showResults(); return; }
+  const q = S.qList[S.qIdx];
+  S.answered = false; S.selOpt = null;
+
+  document.getElementById('qProgFill').style.width = (S.qIdx / S.qList.length * 100) + '%';
+  document.getElementById('qCounterTxt').textContent = `${S.qIdx + 1} / ${S.qList.length}`;
+
+  document.getElementById('qTags').innerHTML =
+    `<span class="qtag m">${q.marks} mark${q.marks > 1 ? 's' : ''}</span>` +
+    `<span class="qtag t">${q.diff}</span>` +
+    (q.board ? `<span class="qtag b">${q.board}</span>` : '');
+
+  const ctx = document.getElementById('qCtx');
+  if (q.ctx) { ctx.innerHTML = q.ctx; ctx.classList.add('show'); } else ctx.classList.remove('show');
+
+  document.getElementById('qBody').innerHTML = q.t;
+  document.getElementById('mcqArea').classList.add('hidden');
+  document.getElementById('txtArea').classList.add('hidden');
+
+  if (q.type === 'mcq') {
+    document.getElementById('mcqArea').classList.remove('hidden');
+    document.getElementById('mcqList').innerHTML = q.opts.map((o, i) =>
+      `<div class="mcq-opt" id="mo${i}" onclick="selOpt(${i})"><span class="opt-key">${String.fromCharCode(65 + i)}</span>${o}</div>`
+    ).join('');
+  } else {
+    document.getElementById('txtArea').classList.remove('hidden');
+    document.getElementById('txtAns').value = '';
+    document.getElementById('txtAns').placeholder = q.marks >= 3 ? 'Write your full answer, showing key terms…' : 'Type your answer…';
+  }
+
+  document.getElementById('checkBtn').style.display = 'inline-block';
+  document.getElementById('checkBtn').disabled = false;
+  document.getElementById('nextBtn').classList.remove('on');
+  const fb = document.getElementById('fbBox'); fb.className = 'fb-box'; fb.innerHTML = '';
+  if (q.tip) document.getElementById('examTip').textContent = q.tip;
+  buildNavDots();
+}
+
+function selOpt(i) {
+  if (S.answered) return;
+  S.selOpt = i;
+  document.querySelectorAll('.mcq-opt').forEach((el, j) => el.classList.toggle('sel', j === i));
+}
+
+function checkAnswer() {
+  if (S.answered) return;
+  const q = S.qList[S.qIdx];
+  S.answered = true; S.sessionTotal++; S.totalDone++;
+
+  let ok = false;
+  if (q.type === 'mcq') {
+    ok = S.selOpt === q.ans;
+    document.querySelectorAll('.mcq-opt').forEach((el, j) => {
+      el.classList.remove('sel');
+      if (j === q.ans) el.classList.add('ans-ok');
+      else if (j === S.selOpt && !ok) el.classList.add('ans-bad');
+    });
+  } else {
+    const uv = document.getElementById('txtAns').value.trim().toLowerCase().replace(/\s+/g, ' ');
+    const ca = String(q.ans).toLowerCase();
+    const kw = ca.split(/[\s,;+→=°×÷]+/).filter(w => w.length > 1);
+    ok = kw.every(k => uv.includes(k)) || uv.replace(/[^0-9.\-]/g, '') === ca.replace(/[^0-9.\-]/g, '') || uv === ca;
+  }
+
+  if (ok) { S.sessionOk++; S.totalOk++; S.streak++; S.xp += q.marks * 10; }
+  else S.streak = 0;
+  S.qResults[S.qIdx] = ok;
+
+  updateTopBar();
+  buildNavDots();
+
+  const fb = document.getElementById('fbBox');
+  fb.className = 'fb-box on ' + (ok ? 'ok' : 'bad');
+  fb.innerHTML = `<div class="fb-title">${ok ? '✅ Correct!' : '❌ Not quite'}</div>
+    <div style="font-size:14px">${ok ? 'Great work!' : 'Expected: <strong>' + q.ans + '</strong>'}</div>
+    <div class="fb-sol"><strong>📝 Worked solution:</strong><br/>${q.sol}</div>
+    ${!ok && q.tip ? `<div style="margin-top:.5rem;font-size:13px">💡 Tip: ${q.tip}</div>` : ''}`;
+
+  document.getElementById('checkBtn').style.display = 'none';
+  document.getElementById('nextBtn').classList.add('on');
+  updateKPIs();
+}
+
+function doHint() {
+  const q = S.qList[S.qIdx];
+  appendAI(q.tip || 'Think about the key words in the question and which formula or method applies.');
+}
+
+function nextQ() { S.qIdx++; renderQ(); }
+
+function backToTopics() {
+  document.getElementById('qShell').classList.remove('on');
+  document.getElementById('resultsScreen').classList.add('hidden');
+  document.getElementById('topicsWrap').style.display = 'block';
+}
+
+function showResults() {
+  document.getElementById('qShell').classList.remove('on');
+  document.getElementById('resultsScreen').classList.remove('hidden');
+  const pct = S.sessionTotal > 0 ? Math.round(S.sessionOk / S.sessionTotal * 100) : 0;
+  document.getElementById('resScore').textContent = pct + '%';
+  document.getElementById('resGrade').textContent = pct >= 90 ? 'Outstanding — exam ready!' : pct >= 70 ? 'Very good — keep it up!' : 'Keep practising!';
+  document.getElementById('resCorrect').textContent = S.sessionOk;
+  document.getElementById('resWrong').textContent = S.sessionTotal - S.sessionOk;
+  document.getElementById('resMarks').textContent = S.qList.slice(0, S.sessionTotal).filter((_, i) => S.qResults[i]).reduce((a, q) => a + q.marks, 0);
+  document.getElementById('improveTxt').innerHTML = pct < 80 ? 'Review the worked solutions for incorrect answers. Retry this topic in 24 hours for best retention.' : 'Excellent work! Push yourself with a harder topic.';
+  document.getElementById('wellTxt').innerHTML = `You scored ${pct}% across ${S.sessionTotal} questions. ${S.streak > 0 ? `You're on a ${S.streak}-question streak! 🔥` : 'Good effort!'}`;
+  if (pct >= 80) S.mastered++;
+  updateKPIs();
+}
+
+// ─── AI TUTOR ────────────────────────────────────
+function appendAI(text, who = 'ai') {
+  const chat = document.getElementById('aiMsgs');
+  const d = document.createElement('div');
+  d.className = 'ai-msg ' + who;
+  d.textContent = text;
+  chat.appendChild(d);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+async function sendToAI() {
+  const inp = document.getElementById('aiInp');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  appendAI(msg, 'you');
+  const q = S.qList[S.qIdx];
+  document.getElementById('aiThinking').style.display = 'block';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 200,
+        system: `You are a friendly British exam tutor. Help with: "${q ? q.t : ''}". Answer: "${q ? q.ans : ''}". Give hints, not the full answer unless student is stuck. 2–3 sentences. Encouraging.`,
+        messages: [{ role: 'user', content: msg }]
+      })
+    });
+    const data = await res.json();
+    const reply = data.content?.map(c => c.text || '').join('') || 'Good thinking! Try breaking the question into smaller steps.';
+    document.getElementById('aiThinking').style.display = 'none';
+    appendAI(reply);
+  } catch {
+    document.getElementById('aiThinking').style.display = 'none';
+    appendAI('Try reading the question carefully — what information are you given, and what do you need to find?');
+  }
+}
+
+// ─── UTILS ───────────────────────────────────────
+function buildNavDots() {
+  document.getElementById('navDots').innerHTML = S.qList.map((_, i) => {
+    const r = S.qResults[i];
+    const cls = r === null ? '' : r ? 'ok' : 'bad';
+    const cur = i === S.qIdx ? 'cur' : '';
+    return `<div class="ndot ${cls} ${cur}" onclick="jumpQ(${i})">${i + 1}</div>`;
+  }).join('');
+}
+
+function jumpQ(i) { if (S.qResults[i] === null) { S.qIdx = i; renderQ(); } }
+
+function updateKPIs() {
+  document.getElementById('kpiDone').textContent = S.totalDone;
+  document.getElementById('kpiAcc').textContent = S.totalDone > 0 ? Math.round(S.totalOk / S.totalDone * 100) + '%' : '—';
+  document.getElementById('kpiStreak').textContent = S.streak;
+  document.getElementById('kpiMastered').textContent = S.mastered;
+  updateTopBar();
+}
+
+function updateTopBar() {
+  document.getElementById('topStreak').textContent = S.streak + ' day' + (S.streak !== 1 ? 's' : '');
+  document.getElementById('topXP').textContent = S.xp;
+}
+
+function buildHeatmap() {
+  const colors = ['var(--bg3)', '#9AE6B4', '#48BB78', '#276749'];
+  document.getElementById('heatGrid').innerHTML = Array.from({ length: 35 }, (_, i) =>
+    `<div class="heat-cell" style="background:${colors[Math.floor(Math.random() * 4)]}" title="Day ${i+1}"></div>`
+  ).join('');
+}
+
+// ─── BOOT ─────────────────────────────────────────
+// app.html is reached after auth on the landing page.
+// If Supabase isn't configured, show demo app directly.
+// If it is, verify session — if no session, send back to landing.
+
+const _urlParams = new URLSearchParams(window.location.search);
+
+// Coupon passed from landing page after signup
+const _urlCoupon = _urlParams.get('coupon');
+if (_urlCoupon) {
+  // Pre-fill the upgrade modal coupon field
+  const mc = document.getElementById('modalCoupon');
+  if (mc) mc.value = _urlCoupon.toUpperCase();
+}
+
+// Successful Stripe payment redirect
+if (_urlParams.get('session_id')) {
+  setTimeout(() => { if (supabase) loadProfile(); }, 2000);
+}
+
+function initSupabase() {
+  if (SUPABASE_URL.includes('YOUR_PROJECT')) {
+    // Demo mode — no keys yet, show app without auth gate
+    console.warn('⚠️  Supabase not configured — demo mode');
+    showDemoApp();
+    return;
+  }
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  supabase.auth.getSession().then(async ({ data: { session } }) => {
+    if (session) {
+      currentUser = session.user;
+      await loadProfile();
+      showApp();
+    } else {
+      // No session — send back to landing page
+      window.location.href = 'index.html'
+        + (_urlCoupon ? '?coupon=' + _urlCoupon : '');
+    }
+  });
+
+  supabase.auth.onAuthStateChange(async (_event, session) => {
+    if (session) {
+      currentUser = session.user;
+      await loadProfile();
+      showApp();
+    } else {
+      window.location.href = 'index.html';
+    }
+  });
+}
+
+initSupabase();
+</script>
+</body>
+</html>

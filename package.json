@@ -1,0 +1,15 @@
+{
+  "name": "brightprep",
+  "version": "1.0.0",
+  "description": "BrightPrep - British Curriculum Exam Practice Platform",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "stripe": "^17.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
