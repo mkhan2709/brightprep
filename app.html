@@ -1112,13 +1112,15 @@ function renderTopics() {
       const canAccess = true;
       const mastery = canAccess ? Math.floor(Math.random() * 80) + 10 : 0;
       const col = mastery >= 80 ? 'hi' : mastery >= 50 ? 'mid' : 'lo';
-      html += `<div class="topic-card" onclick="${canAccess ? `startTopic('${S.subj}','${tp.id}')` : 'requirePro()'}">
-        <div class="tc-top"><span class="tc-icon">${tp.icon}</span>${canAccess ? '' : ''}</div>
-        <div class="tc-name">${tp.name}</div>
-        <div class="tc-meta">${tp.qs.length} questions</div>
-        <div class="tc-bar"><div class="tc-fill" style="width:${mastery}%"></div></div>
-        <div class="tc-bottom"><span class="mastery-pct ${canAccess ? col : 'none'}">${canAccess ? mastery + '% mastery' : 'Start topic'}</span><span style="font-size:11px;color:var(--txt3)">${tp.qs.length} Qs</span></div>
-      </div>`;
+      const onclick = "startTopic('" + S.subj + "','" + tp.id + "')";
+      html += '<div class="topic-card" onclick="' + onclick + '">'
+        + '<div class="tc-top"><span class="tc-icon">' + tp.icon + '</span></div>'
+        + '<div class="tc-name">' + tp.name + '</div>'
+        + '<div class="tc-meta">' + tp.qs.length + ' questions</div>'
+        + '<div class="tc-bar"><div class="tc-fill" style="width:' + mastery + '%"></div></div>'
+        + '<div class="tc-bottom"><span class="mastery-pct ' + col + '">' + mastery + '% mastery</span>'
+        + '<span style="font-size:11px;color:var(--txt3)">' + tp.qs.length + ' Qs</span></div>'
+        + '</div>';
     });
     html += `</div></div>`;
   });
