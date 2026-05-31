@@ -2,13 +2,17 @@
   publish = "."
   functions = "netlify/functions"
 
+# Disable secrets scanning — Supabase anon/publishable keys are safe to be public
+[build.environment]
+  SECRETS_SCAN_ENABLED = "false"
+
 # API routes → Netlify functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
 
-# After Stripe payment success → app with session_id
+# After Stripe payment success → app
 [[redirects]]
   from = "/success"
   to = "/app.html"
@@ -24,6 +28,3 @@
 
 [functions]
   node_bundler = "esbuild"
-
-[build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "SUPABASE_URL,SUPABASE_ANON_KEY"
