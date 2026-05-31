@@ -1013,20 +1013,21 @@ function applySignupCoupon() {
 
 // ── SUPABASE CONFIG ──────────────────────────────────
 // 🔧 Step 1: paste your values from supabase.com → Project Settings → API
-const SUPABASE_URL      = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_ANON_PUBLIC_KEY';
+const SUPABASE_URL      = 'https://thzkhrzyiewfeyukaktp.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_fRTiZeqdL9chTGBdwWVFGw_fkzXAs1M';
 
 // Initialise client (only if keys are filled in)
 let sb = null;
+let authReady = false;
 if (!SUPABASE_URL.includes('YOUR_PROJECT')) {
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  // If already logged in, skip straight to app
   sb.auth.getSession().then(({ data: { session } }) => {
+    authReady = true;
     if (session) goToApp(session.user);
   });
-  // Handles email-confirmation redirect back to this page
-  sb.auth.onAuthStateChange((_event, session) => {
-    if (session) goToApp(session.user);
+  sb.auth.onAuthStateChange((event, session) => {
+    if (!authReady) return;
+    if (event === 'SIGNED_IN' && session) goToApp(session.user);
   });
 }
 
@@ -1057,25 +1058,45 @@ async function doSignup() {
       email, password: pass,
       options: {
         data: { name, year_group: year, coupon_code: activeCoupon || null },
-        emailRedirectTo: window.location.origin + '/app.html'
+        emailRedirectTo: 'https://brightprep.netlify.app/app.html'
           + (activeCoupon ? '?coupon=' + activeCoupon : ''),
       }
     });
     setLoading('su', false);
-    console.log('Supabase signup result:', JSON.stringify({data: data?.user?.id, error: error?.message}));
-    if (error) { errEl.textContent = error.message; errEl.classList.add('on'); return; }
-    // Create profile row in Supabase
-    if (data?.user) {
+
+    if (error) {
+      errEl.textContent = '❌ ' + error.message;
+      errEl.classList.add('on');
+      return;
+    }
+
+    if (!data || !data.user) {
+      errEl.textContent = '❌ Signup failed — please try again.';
+      errEl.classList.add('on');
+      return;
+    }
+
+    // Create profile row
+    try {
       await sb.from('profiles').upsert({
-        id: data.user.id, name, year_group: year,
+        id: data.user.id, name: name, year_group: year,
         is_pro: false, plan: 'free',
         coupon_used: activeCoupon || null,
         created_at: new Date().toISOString(),
       });
+    } catch(e) { console.log('Profile upsert error:', e); }
+
+    // If email confirmation OFF → session exists → go straight to app
+    if (data.session) {
+      okEl.innerHTML = '✅ Account created! Redirecting to app…';
+      okEl.classList.add('on');
+      setTimeout(() => { authReady = true; goToApp(data.user); }, 1200);
+    } else {
+      // Email confirmation ON → ask them to check inbox
+      okEl.innerHTML = '✅ Almost there! <strong>Check your email</strong> for a confirmation link.'
+        + (activeCoupon ? ' Code <strong>' + activeCoupon + '</strong> saved.' : '');
+      okEl.classList.add('on');
     }
-    okEl.innerHTML = '✅ Account created! <strong>Check your email</strong> to confirm, then you\'ll be taken straight to the app.'
-      + (activeCoupon ? ' Code <strong>' + activeCoupon + '</strong> is saved to your account.' : '');
-    okEl.classList.add('on');
   } else {
     // ── DEMO MODE (no Supabase keys yet) ──
     setLoading('su', false);
@@ -1114,7 +1135,7 @@ async function doGoogleAuth() {
   if (sb) {
     await sb.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin + '/app.html'
+      options: { redirectTo: 'https://brightprep.netlify.app/app.html'
         + (activeCoupon ? '?coupon=' + activeCoupon : '') }
     });
   } else {
