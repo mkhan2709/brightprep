@@ -407,106 +407,7 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
 <!-- ══════════════════════════════════════════
      AUTH SCREEN
 ══════════════════════════════════════════ -->
-<div id="authScreen">
-
-  <div class="auth-left">
-    <div>
-      <div class="auth-brand">
-        <div class="auth-logo-icon">B</div>
-        <div>
-          <div class="auth-logo-text">BrightPrep</div>
-          <div class="auth-logo-sub">British Curriculum · KS2 → A-Level</div>
-        </div>
-      </div>
-      <h1>Practise like it's<br/>the <em>real exam</em></h1>
-      <p>Exam-style questions for every British curriculum stage, with AI-powered hints, worked solutions, and predicted grades.</p>
-      <div class="auth-features">
-        <div class="auth-feature"><div class="af-icon">📝</div><div class="af-text"><strong>Real exam format</strong>AQA, Edexcel & OCR-aligned questions with mark schemes</div></div>
-        <div class="auth-feature"><div class="af-icon">🤖</div><div class="af-text"><strong>AI Tutor</strong>Ask for hints and explanations on every question</div></div>
-        <div class="auth-feature"><div class="af-icon">📊</div><div class="af-text"><strong>Progress & predicted grades</strong>Topic-by-topic mastery with grade tracking</div></div>
-        <div class="auth-feature"><div class="af-icon">🎯</div><div class="af-text"><strong>Personalised revision plan</strong>Week-by-week study schedule tailored to your exam date</div></div>
-      </div>
-    </div>
-    <div>
-      <div class="auth-stat-row">
-        <div class="auth-stat"><div class="v">500+</div><div class="l">Questions</div></div>
-        <div class="auth-stat"><div class="v">5</div><div class="l">Subjects</div></div>
-        <div class="auth-stat"><div class="v">KS2–A2</div><div class="l">All stages</div></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="auth-right">
-    <div class="auth-form-wrap">
-      <div class="auth-tabs">
-        <button class="atab active" onclick="switchTab('signin')">Sign in</button>
-        <button class="atab" onclick="switchTab('signup')">Create account</button>
-      </div>
-
-      <!-- SIGN IN FORM -->
-      <div id="signinForm" class="auth-form">
-        <h2>Welcome back</h2>
-        <p class="auth-sub">Sign in to continue your practice.</p>
-        <div class="auth-error" id="siError"></div>
-        <div class="auth-success" id="siSuccess"></div>
-        <div class="field"><label>Email</label><input type="email" id="siEmail" placeholder="you@example.com"/></div>
-        <div class="field"><label>Password</label><input type="password" id="siPass" placeholder="Your password"/></div>
-        <button class="btn-primary" onclick="signIn()"><span id="siSpinner" class="spinner hidden"></span>Sign in</button>
-        <div class="divider">or</div>
-        <button class="btn-secondary" onclick="signInGoogle()">🔐 Continue with Google</button>
-        <div class="auth-footer"><a href="#" onclick="showForgot()">Forgot password?</a></div>
-      </div>
-
-      <!-- SIGN UP FORM -->
-      <div id="signupForm" class="auth-form hidden">
-        <h2>Create your account</h2>
-        <p class="auth-sub">Start your 7-day free trial — no card needed.</p>
-        <div class="auth-error" id="suError"></div>
-        <div class="auth-success" id="suSuccess"></div>
-        <div class="field"><label>Your name</label><input type="text" id="suName" placeholder="First name"/></div>
-        <div class="field"><label>Email</label><input type="email" id="suEmail" placeholder="you@example.com"/></div>
-        <div class="field"><label>Password</label><input type="password" id="suPass" placeholder="8+ characters"/></div>
-        <div class="field"><label>Year group</label>
-          <select id="suYear" style="width:100%;padding:11px 14px;border:1.5px solid var(--bdr2);border-radius:var(--r);font-size:15px;color:var(--txt);background:var(--bg)">
-            <option value="">Select year group…</option>
-            <option>Year 3 (Age 7–8)</option><option>Year 4 (Age 8–9)</option>
-            <option>Year 5 (Age 9–10)</option><option selected>Year 6 (Age 10–11)</option>
-            <option>Year 7</option><option>Year 8</option><option>Year 9</option>
-            <option>GCSE Year 10</option><option>GCSE Year 11</option>
-            <option>A-Level Year 12</option><option>A-Level Year 13</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:12px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:.4rem">Coupon / promo code <span style="font-weight:400;text-transform:none;color:var(--txt3)">(optional)</span></label>
-          <div class="coupon-row">
-            <input type="text" id="suCoupon" placeholder="e.g. BRIGHT50" style="text-transform:uppercase"/>
-            <button class="btn-apply-coupon" onclick="applyCoupon()">Apply</button>
-          </div>
-          <div class="coupon-status" id="couponStatus"></div>
-        </div>
-        <button class="btn-primary" onclick="signUp()"><span id="suSpinner" class="spinner hidden"></span>Create account & start free trial</button>
-        <p style="font-size:11px;color:var(--txt3);text-align:center;margin-top:.5rem">7-day free trial · No card required · Cancel any time</p>
-      </div>
-
-      <!-- FORGOT PASSWORD -->
-      <div id="forgotForm" class="auth-form hidden">
-        <h2>Reset password</h2>
-        <p class="auth-sub">We'll send a reset link to your email.</p>
-        <div class="auth-error" id="fpError"></div>
-        <div class="auth-success" id="fpSuccess"></div>
-        <div class="field"><label>Email</label><input type="email" id="fpEmail" placeholder="you@example.com"/></div>
-        <button class="btn-primary" onclick="forgotPassword()">Send reset link</button>
-        <div class="auth-footer"><a href="#" onclick="switchTab('signin')">← Back to sign in</a></div>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     APP SCREEN
-══════════════════════════════════════════ -->
-<div id="appScreen">
+<div id="appScreen" style="display:flex;min-height:100vh">
 
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
@@ -1011,13 +912,11 @@ async function startCheckout(plan) {
 
 // ─── SCREEN SWITCHES ──────────────────────────────
 function showAuthScreen() {
-  document.getElementById('authScreen').classList.remove('hidden');
-  document.getElementById('appScreen').classList.remove('visible');
+  window.location.href = 'index.html';
 }
 
 function showApp() {
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('appScreen').classList.add('visible');
+  document.getElementById('appScreen').style.display = 'flex';
   if (currentUser) {
     const name = currentUser.user_metadata?.name || currentUser.email?.split('@')[0] || 'Student';
     updateUserUI(name, isPro ? 'Pro' : 'Free plan');
@@ -1027,9 +926,7 @@ function showApp() {
 }
 
 function showDemoApp() {
-  // Demo mode — no Supabase configured yet
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('appScreen').classList.add('visible');
+  document.getElementById('appScreen').style.display = 'flex';
   updateUserUI('Demo User', 'Demo mode');
   renderTopics();
   buildHeatmap();
