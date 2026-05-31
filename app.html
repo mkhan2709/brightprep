@@ -8,7 +8,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
 <!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>var supabaseLib = window.supabase;</script>
 <style>
 /* ─────────────────────────────────────────────
    DESIGN TOKENS & RESET
@@ -1401,39 +1402,48 @@ if (_urlParams.get('session_id')) {
 
 function initSupabase() {
   if (SUPABASE_URL.includes('YOUR_PROJECT')) {
-    // Demo mode — no keys yet, show app without auth gate
-    console.warn('⚠️  Supabase not configured — demo mode');
+    console.warn('Demo mode');
     showDemoApp();
     return;
   }
-  sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  sbClient.auth.getSession().then(async ({ data: { session } }) => {
+  sbClient = supabaseLib.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let sessionHandled = false;
+
+  // onAuthStateChange fires reliably even after cross-page redirect
+  sbClient.auth.onAuthStateChange(async (event, session) => {
+    if (sessionHandled) return;
     if (session) {
+      sessionHandled = true;
       currentUser = session.user;
       await loadProfile();
       showApp();
-    } else {
-      // No session — send back to landing page
-      window.location.href = 'index.html'
-        + (_urlCoupon ? '?coupon=' + _urlCoupon : '');
-    }
-  });
-
-  sbClient.auth.onAuthStateChange(async (_event, session) => {
-    if (session) {
-      currentUser = session.user;
-      await loadProfile();
-      showApp();
-    } else {
+    } else if (event === 'SIGNED_OUT') {
+      sessionHandled = true;
       window.location.href = 'index.html';
     }
   });
+
+  // Fallback: also check getSession directly
+  // Give onAuthStateChange 800ms to fire first, then check manually
+  setTimeout(async () => {
+    if (sessionHandled) return;
+    const { data: { session } } = await sbClient.auth.getSession();
+    if (session) {
+      sessionHandled = true;
+      currentUser = session.user;
+      await loadProfile();
+      showApp();
+    } else {
+      // No session after waiting — send to landing
+      sessionHandled = true;
+      window.location.href = 'index.html' + (_urlCoupon ? '?coupon=' + _urlCoupon : '');
+    }
+  }, 800);
 }
 
 initSupabase();
 </script>
 </body>
 </html>
-
-
