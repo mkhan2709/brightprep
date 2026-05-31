@@ -224,7 +224,7 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
 .topics-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:11px;margin-bottom:1.5rem}
 .topic-card{background:var(--bg);border:0.5px solid var(--bdr);border-radius:var(--rlg);padding:1rem;cursor:pointer;transition:all .18s;box-shadow:var(--sh)}
 .topic-card:hover:not(.locked){border-color:var(--bdr2);box-shadow:var(--sh2);transform:translateY(-1px)}
-.topic-card.locked{opacity:.7;cursor:default}
+.topic-card.locked{opacity:1;cursor:pointer}
 .tc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.6rem}
 .tc-icon{font-size:20px}
 .tc-name{font-size:14px;font-weight:600;margin-bottom:.2rem}
@@ -428,11 +428,11 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
       <button class="nav-btn" onclick="goPage('progress')"><span class="ni">📊</span>My Progress</button>
       <button class="nav-btn" onclick="goPage('plan')"><span class="ni">📅</span>Revision Plan</button>
       <div class="nav-sec-label" style="margin-top:.5rem">Account</div>
-      <button class="nav-btn" onclick="showUpgradeModal()"><span class="ni">⭐</span>Upgrade to Pro</button>
+      <button class="nav-btn" onclick="goPage('progress')"><span class="ni">📊</span>My Progress</button>
       <button class="nav-btn" onclick="localStorage.clear();sessionStorage.clear();window.location.href='index.html'" style="color:rgba(255,150,150,0.8)"><span class="ni">↩</span>Sign out</button>
     </nav>
 
-    <div class="pro-banner" id="proBanner">
+    <div class="pro-banner" id="proBanner" style="display:none!important">
       <p>Unlock all 5 subjects, mock papers & AI tutor</p>
       <button class="btn-upgrade" onclick="showUpgradeModal()">Upgrade to Pro →</button>
     </div>
@@ -529,9 +529,9 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
       <div class="subjects-grid">
         <div class="subj-card maths" onclick="goPage('practice');setSubj('maths')"><div class="sc-icon">📐</div><div class="sc-name">Mathematics</div><div class="sc-meta">8 topics · 80 questions</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:62%;background:var(--blue)"></div></div><span class="sc-pct">62%</span></div></div>
         <div class="subj-card science" onclick="goPage('practice');setSubj('science')"><div class="sc-icon">🔬</div><div class="sc-name">Science</div><div class="sc-meta">8 topics · 80 questions</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:48%;background:var(--teal)"></div></div><span class="sc-pct">48%</span></div></div>
-        <div class="subj-card english locked-card" onclick="requirePro()"><div class="sc-icon">📖</div><div class="sc-name">English 🔒</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%;background:var(--purple)"></div></div><span class="sc-pct" style="color:var(--txt3)">Pro</span></div></div>
-        <div class="subj-card vr locked-card" onclick="requirePro()"><div class="sc-icon">💬</div><div class="sc-name">Verbal Reasoning 🔒</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%"></div></div><span class="sc-pct" style="color:var(--txt3)">Pro</span></div></div>
-        <div class="subj-card nvr locked-card" onclick="requirePro()"><div class="sc-icon">🧩</div><div class="sc-name">Non-Verbal Reasoning 🔒</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%"></div></div><span class="sc-pct" style="color:var(--txt3)">Pro</span></div></div>
+        <div class="subj-card english" onclick="goPage('practice');setSubj('english')"><div class="sc-icon">📖</div><div class="sc-name">English</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%;background:var(--purple)"></div></div><span class="sc-pct">0%</span></div></div>
+        <div class="subj-card vr" onclick="goPage('practice');setSubj('verbal')"><div class="sc-icon">💬</div><div class="sc-name">Verbal Reasoning</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%"></div></div><span class="sc-pct">0%</span></div></div>
+        <div class="subj-card nvr" onclick="goPage('practice');setSubj('nvr')"><div class="sc-icon">🧩</div><div class="sc-name">Non-Verbal Reasoning</div><div class="sc-meta">6 topics · Pro only</div><div class="sc-prog-row"><div class="sc-bar"><div class="sc-fill" style="width:0%"></div></div><span class="sc-pct">0%</span></div></div>
       </div>
     </div>
 
@@ -607,13 +607,13 @@ nav{flex:1;padding:.5rem 0;overflow-y:auto}
           <div style="font-size:12px;color:var(--txt3);display:flex;gap:12px;margin-bottom:1rem"><span>⏱ 30 min</span><span>📝 20 Qs</span></div>
           <button style="width:100%;background:var(--navy);color:#fff;border:none;padding:9px;border-radius:var(--r);font-size:13px;font-weight:600">Start paper</button>
         </div>
-        <div class="card" style="opacity:.7;cursor:pointer" onclick="requirePro()">
+        <div class="card" style="opacity:.7;cursor:pointer" onclick="goPage('practice')">
           <div style="display:flex;justify-content:space-between;margin-bottom:.85rem"><span style="font-size:26px">🔬</span><span class="chip amber">Pro</span></div>
           <div style="font-size:15px;font-weight:700;margin-bottom:.25rem">GCSE Science Higher</div>
           <div style="font-size:12px;color:var(--txt3);display:flex;gap:12px;margin-bottom:1rem"><span>⏱ 75 min</span><span>📝 40 Qs</span></div>
           <button style="width:100%;background:var(--bg3);color:var(--txt3);border:none;padding:9px;border-radius:var(--r);font-size:13px">🔒 Pro only</button>
         </div>
-        <div class="card" style="opacity:.7;cursor:pointer" onclick="requirePro()">
+        <div class="card" style="opacity:.7;cursor:pointer" onclick="goPage('practice')">
           <div style="display:flex;justify-content:space-between;margin-bottom:.85rem"><span style="font-size:26px">💬</span><span class="chip amber">Pro</span></div>
           <div style="font-size:15px;font-weight:700;margin-bottom:.25rem">11+ Verbal Reasoning</div>
           <div style="font-size:12px;color:var(--txt3);display:flex;gap:12px;margin-bottom:1rem"><span>⏱ 50 min</span><span>📝 80 Qs</span></div>
@@ -736,7 +736,7 @@ const VALID_COUPONS = {
 // ─── SUPABASE CLIENT ──────────────────────────────
 let sbClient = null;
 let currentUser = null;
-let isPro = false;
+let isPro = true;
 
 // initSupabase and session handling moved to BOOT section below
 
@@ -977,7 +977,7 @@ function requirePro() { if (!isPro) showUpgradeModal(); }
 const QB = {
   maths: {
     sections: [
-      { heading:'Foundation — free', free:true, topics:[
+      { heading:'Foundation topics', free:true, topics:[
         { id:'num', name:'Number & Algebra', icon:'🔢', qs:[
           {t:'Solve: <strong>5x − 3 = 22</strong>',type:'text',ans:'5',marks:2,diff:'Foundation',board:'AQA',sol:'5x = 25 → x = 5.',tip:'Add 3 to both sides, then divide by 5.'},
           {t:'Expand and simplify: <strong>4(3x − 2) − 5x</strong>',type:'text',ans:'7x-8',marks:2,diff:'Foundation',board:'AQA',sol:'12x − 8 − 5x = 7x − 8.'},
@@ -993,7 +993,7 @@ const QB = {
           {t:'Find the original price if after 20% off it costs £56.',type:'text',ans:'70',marks:3,diff:'Higher',board:'Edexcel',sol:'0.8 × original = 56. Original = 56 ÷ 0.8 = £70.'},
         ]},
       ]},
-      { heading:'Higher topics — Pro', free:false, topics:[
+      { heading:'Higher topics', free:true, topics:[
         { id:'quad', name:'Quadratics', icon:'📈', qs:[
           {t:'Solve: <strong>x² − 7x + 10 = 0</strong>',type:'text',ans:'x=2 x=5',marks:3,diff:'Higher',board:'AQA',sol:'(x−2)(x−5) = 0 → x=2 or x=5.'},
           {t:'Complete the square: <strong>x² + 10x + 3</strong>',type:'text',ans:'(x+5)²-22',marks:3,diff:'Higher',board:'Edexcel',sol:'(x+5)² − 25 + 3 = (x+5)² − 22.'},
@@ -1009,7 +1009,7 @@ const QB = {
   },
   science: {
     sections: [
-      { heading:'Foundation — free', free:true, topics:[
+      { heading:'Foundation topics', free:true, topics:[
         { id:'forces', name:'Forces & Motion', icon:'⚡', qs:[
           {t:'A 3 kg object accelerates at 5 m/s². Find the resultant force.',type:'text',ans:'15',marks:2,diff:'Foundation',board:'AQA',sol:'F = ma = 3 × 5 = 15 N.'},
           {t:'State Newton\'s First Law.',type:'text',ans:'object at rest stays at rest unless acted on by resultant force',marks:2,diff:'Foundation',board:'AQA',sol:'An object remains at rest or in uniform motion unless acted upon by a resultant (net) force.'},
@@ -1024,7 +1024,7 @@ const QB = {
           {t:'Define relative atomic mass.',type:'text',ans:'weighted average mass of isotopes relative to carbon-12',marks:2,diff:'Higher',board:'Edexcel',sol:'The weighted mean mass of an atom relative to one twelfth the mass of a carbon-12 atom.'},
         ]},
       ]},
-      { heading:'Higher topics — Pro', free:false, topics:[
+      { heading:'Higher topics', free:true, topics:[
         { id:'genetics', name:'Genetics', icon:'🧬', qs:[
           {t:'Two Bb parents have children. What % have genotype bb?',type:'text',ans:'25',marks:3,diff:'Foundation',board:'AQA',sol:'Bb × Bb → BB, Bb, Bb, bb. Only bb = 1/4 = 25%.'},
           {t:'What is a mutation?',type:'text',ans:'change in DNA sequence',marks:2,diff:'Foundation',board:'AQA',sol:'A mutation is a random change in the DNA base sequence of a gene.'},
@@ -1032,9 +1032,51 @@ const QB = {
       ]},
     ]
   },
-  english: { sections:[{ heading:'All topics — Pro', free:false, topics:[{ id:'lang', name:'Language Analysis', icon:'📖', qs:[{t:'What effect does alliteration create?',type:'text',ans:'rhythm emphasis draws attention',marks:2,diff:'Foundation',board:'AQA',sol:'Alliteration (repeating consonant sounds) creates rhythm, emphasis and makes phrases memorable.'}]}]}]},
-  verbal:  { sections:[{ heading:'All topics — Pro', free:false, topics:[{ id:'vr1', name:'Codes & Analogies', icon:'💬', qs:[{t:'If CAT = DBU, what does DOG equal?',type:'text',ans:'EPH',marks:1,diff:'Foundation',board:'11+',sol:'Each letter +1: D→E, O→P, G→H = EPH.'}]}]}]},
-  nvr:     { sections:[{ heading:'All topics — Pro', free:false, topics:[{ id:'nvr1', name:'Pattern Sequences', icon:'🧩', qs:[{t:'Which pattern comes next in the sequence? (rotating square, +1 side each step)',type:'mcq',opts:['Pentagon','Hexagon','Triangle','Circle'],ans:0,marks:1,diff:'Foundation',board:'11+',sol:'The sequence adds one side each step. After square (4 sides) comes pentagon (5 sides).'}]}]}]},
+  english: { sections:[{ heading:'English topics', free:true, topics:[
+    { id:'lang', name:'Language Analysis', icon:'📖', qs:[
+      {t:'What is the effect of a metaphor in descriptive writing?',type:'text',ans:'vivid image direct comparison emotional impact',marks:2,diff:'Foundation',board:'AQA',sol:'A metaphor creates a direct comparison without "like/as", helping readers form a vivid mental image and adding emotional intensity.',tip:'Think about what picture the metaphor creates in your mind.'},
+      {t:'Identify the technique: "The wind whispered through the trees."',type:'mcq',opts:['Simile','Personification','Alliteration','Hyperbole'],ans:1,marks:1,diff:'Foundation',board:'AQA',sol:'Personification gives the wind a human quality (whispering). It makes the description more vivid and atmospheric.'},
+      {t:'What is the effect of short sentences in a tense scene?',type:'text',ans:'builds tension urgency pace quickens dramatic effect',marks:2,diff:'Foundation',board:'AQA',sol:'Short sentences create a fast pace and sense of urgency, building tension and keeping the reader on edge.'},
+      {t:'What does "emotive language" mean?',type:'mcq',opts:['Language that rhymes','Words chosen to provoke an emotional response','Very long sentences','Technical vocabulary'],ans:1,marks:1,diff:'Foundation',board:'AQA',sol:'Emotive language uses words deliberately chosen to provoke an emotional reaction in the reader — e.g. "innocent victim" rather than just "person".'},
+      {t:'Explain the effect of a rhetorical question in persuasive writing.',type:'text',ans:'engages reader makes them think implies answer involves audience',marks:2,diff:'Foundation',board:'AQA',sol:'A rhetorical question engages the reader directly, makes them think, and implies an answer — drawing them into the argument without requiring a spoken reply.'},
+      {t:'What is structural technique of "in medias res"?',type:'mcq',opts:['Starting at the beginning','Starting in the middle of the action','Ending with a twist','Using flashbacks only'],ans:1,marks:2,diff:'Higher',board:'AQA',sol:'In medias res (Latin: "in the middle of things") means starting the narrative at a point of action or conflict, immediately engaging the reader.'},
+      {t:'What is the difference between first and third person narration?',type:'text',ans:'first person I narrator third person he she they narrator outside',marks:2,diff:'Foundation',board:'AQA',sol:'First person: narrator uses "I" — inside the story, personal and limited. Third person: narrator uses "he/she/they" — outside the story, can be omniscient.'},
+    ]},
+    { id:'lit', name:'Literature: Themes', icon:'📚', qs:[
+      {t:'In "An Inspector Calls", what does the Inspector symbolise?',type:'mcq',opts:['The police force','The voice of socialism and social conscience','The Birling family conscience only','World War Two'],ans:1,marks:3,diff:'Higher',board:'AQA',sol:'The Inspector symbolises socialist ideals and collective social responsibility. He represents Priestley's own views — that society must care for all its members, challenging the Birlings' selfish capitalism.'},
+      {t:'What is the theme of appearance vs reality in "Macbeth"?',type:'text',ans:'characters deceive others nothing is what it seems fair foul',marks:3,diff:'Higher',board:'AQA',sol:'"Fair is foul and foul is fair" — the witches establish this theme. Characters like Macbeth and Lady Macbeth mask their murderous intentions. Duncan cannot see Macbeth's treachery. Appearance conceals darker reality throughout.'},
+      {t:'What does the green light symbolise in "The Great Gatsby"?',type:'mcq',opts:['Money and wealth','The American Dream and unattainable desire','Daisy's love specifically','Environmental hope'],ans:1,marks:3,diff:'Higher',board:'AQA',sol:'The green light at the end of Daisy's dock symbolises Gatsby's dreams and desires — and more broadly the American Dream itself: always visible but ultimately unattainable.'},
+      {t:'Name two ways Shakespeare presents power in "Macbeth".',type:'text',ans:'ambition corruption violence tyranny divine right manipulation',marks:4,diff:'Higher',board:'AQA',sol:'1) Power through violence — Macbeth kills to gain and maintain the throne. 2) Power through manipulation — Lady Macbeth manipulates Macbeth; the witches manipulate through prophecy. Power corrupts both characters.'},
+    ]},
+  ]}]},
+  verbal: { sections:[{ heading:'Verbal Reasoning', free:true, topics:[
+    { id:'vr1', name:'Codes & Ciphers', icon:'🔤', qs:[
+      {t:'If CAT = DBU, what does DOG equal?',type:'text',ans:'EPH',marks:1,diff:'Foundation',board:'11+',sol:'Each letter shifts +1: D→E, O→P, G→H = EPH.',tip:'Find the pattern by comparing each letter in the word with the code.'},
+      {t:'If FACE = 6135, what does CAFE equal?',type:'text',ans:'3156',marks:1,diff:'Foundation',board:'11+',sol:'F=6, A=1, C=3, E=5. So CAFE = 3,1,6,5 = 3156.'},
+      {t:'Complete the sequence: A, C, E, G, __',type:'mcq',opts:['H','I','J','K'],ans:1,marks:1,diff:'Foundation',board:'11+',sol:'Each letter skips one: A(+2)C(+2)E(+2)G(+2)I. Answer: I.'},
+      {t:'If TRAIN is coded as SQZHO, what is the rule?',type:'mcq',opts:['Each letter +1','Each letter -1','Reverse alphabet','Mirror letters'],ans:1,marks:1,diff:'Foundation',board:'11+',sol:'T→S, R→Q, A→Z, I→H, N→O. Each letter moves back by 1 in the alphabet (−1).'},
+      {t:'Which word is the odd one out: Apple, Banana, Carrot, Mango',type:'mcq',opts:['Apple','Banana','Carrot','Mango'],ans:2,marks:1,diff:'Foundation',board:'11+',sol:'Carrot is a vegetable. Apple, Banana, and Mango are all fruits.'},
+    ]},
+    { id:'vr2', name:'Analogies & Relationships', icon:'🔗', qs:[
+      {t:'Book is to Library as Painting is to ___',type:'mcq',opts:['Artist','Gallery','Brush','Canvas'],ans:1,marks:1,diff:'Foundation',board:'11+',sol:'A book is stored/displayed in a Library. A Painting is stored/displayed in a Gallery.'},
+      {t:'Hot is to Cold as Day is to ___',type:'mcq',opts:['Sun','Afternoon','Night','Moon'],ans:2,marks:1,diff:'Foundation',board:'11+',sol:'Hot and Cold are opposites. Day and Night are opposites.'},
+      {t:'Puppy is to Dog as Kitten is to ___',type:'text',ans:'cat',marks:1,diff:'Foundation',board:'11+',sol:'A puppy grows into a Dog. A kitten grows into a Cat.'},
+      {t:'Composer is to Symphony as Author is to ___',type:'mcq',opts:['Painting','Novel','Orchestra','Poem'],ans:1,marks:1,diff:'Higher',board:'11+',sol:'A Composer creates a Symphony. An Author creates a Novel (both are their primary creative works).'},
+    ]},
+  ]}]},
+  nvr: { sections:[{ heading:'Non-Verbal Reasoning', free:true, topics:[
+    { id:'nvr1', name:'Patterns & Sequences', icon:'🧩', qs:[
+      {t:'A square rotates 90° clockwise each step. After 3 steps from 0°, what angle is it at?',type:'mcq',opts:['180°','270°','360°','90°'],ans:1,marks:1,diff:'Foundation',board:'11+',sol:'0° → 90° → 180° → 270°. After 3 steps = 270°.'},
+      {t:'Each shape gains one side per step: triangle, square, pentagon... what comes next?',type:'mcq',opts:['Heptagon','Hexagon','Octagon','Pentagon'],ans:1,marks:1,diff:'Foundation',board:'11+',sol:'Triangle(3) → Square(4) → Pentagon(5) → Hexagon(6). Each step adds one side.'},
+      {t:'If a pattern alternates between filled and empty circles, and starts filled, what is the 7th shape?',type:'mcq',opts:['Empty','Filled','Half-filled','Square'],ans:1,marks:1,diff:'Foundation',board:'11+',sol:'Filled(1), Empty(2), Filled(3), Empty(4), Filled(5), Empty(6), Filled(7). Odd positions = Filled.'},
+      {t:'A shape has 4 lines of symmetry. Which shape is it most likely to be?',type:'mcq',opts:['Rectangle','Equilateral triangle','Square','Regular pentagon'],ans:2,marks:1,diff:'Foundation',board:'11+',sol:'A square has 4 lines of symmetry (2 through opposite sides, 2 through opposite corners).'},
+    ]},
+    { id:'nvr2', name:'Spatial Reasoning', icon:'🔷', qs:[
+      {t:'A cube has how many faces?',type:'mcq',opts:['4','6','8','12'],ans:1,marks:1,diff:'Foundation',board:'11+',sol:'A cube has 6 faces (top, bottom, front, back, left, right).'},
+      {t:'If you fold a net of a cube, which face will be opposite the top face?',type:'text',ans:'bottom',marks:1,diff:'Foundation',board:'11+',sol:'When a cube is assembled, the top and bottom faces are always directly opposite each other.'},
+      {t:'A rectangle is reflected in a vertical mirror line. What stays the same?',type:'mcq',opts:['Position','Orientation','Size and shape','The left-right order'],ans:2,marks:1,diff:'Foundation',board:'11+',sol:'Reflection preserves size and shape (congruence) but flips orientation. The image is the same size but mirrored.'},
+    ]},
+  ]}]},
 };
 
 // ─── APP STATE ────────────────────────────────────
@@ -1067,15 +1109,15 @@ function renderTopics() {
   subj.sections.forEach(sec => {
     html += `<div style="margin-bottom:1.5rem"><h3 style="font-size:12px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.85rem">${sec.heading}</h3><div class="topics-grid">`;
     sec.topics.forEach(tp => {
-      const canAccess = sec.free || isPro;
+      const canAccess = true;
       const mastery = canAccess ? Math.floor(Math.random() * 80) + 10 : 0;
       const col = mastery >= 80 ? 'hi' : mastery >= 50 ? 'mid' : 'lo';
-      html += `<div class="topic-card${canAccess ? '' : ' locked'}" onclick="${canAccess ? `startTopic('${S.subj}','${tp.id}')` : 'requirePro()'}">
-        <div class="tc-top"><span class="tc-icon">${tp.icon}</span>${canAccess ? '' : '<span style="font-size:14px;color:var(--txt3)">🔒</span>'}</div>
+      html += `<div class="topic-card" onclick="${canAccess ? `startTopic('${S.subj}','${tp.id}')` : 'requirePro()'}">
+        <div class="tc-top"><span class="tc-icon">${tp.icon}</span>${canAccess ? '' : ''}</div>
         <div class="tc-name">${tp.name}</div>
         <div class="tc-meta">${tp.qs.length} questions</div>
         <div class="tc-bar"><div class="tc-fill" style="width:${mastery}%"></div></div>
-        <div class="tc-bottom"><span class="mastery-pct ${canAccess ? col : 'none'}">${canAccess ? mastery + '% mastery' : 'Locked'}</span><span style="font-size:11px;color:var(--txt3)">${tp.qs.length} Qs</span></div>
+        <div class="tc-bottom"><span class="mastery-pct ${canAccess ? col : 'none'}">${canAccess ? mastery + '% mastery' : 'Start topic'}</span><span style="font-size:11px;color:var(--txt3)">${tp.qs.length} Qs</span></div>
       </div>`;
     });
     html += `</div></div>`;
