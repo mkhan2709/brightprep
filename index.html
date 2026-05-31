@@ -326,9 +326,9 @@ footer{background:#070C18;padding:2.5rem clamp(1.5rem,5vw,3rem);border-top:1px s
 /* ── AUTH MODAL ── */
 .auth-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.7);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)}
 .auth-overlay.open{display:flex}
-.auth-modal{background:var(--white);border-radius:var(--rxl);width:100%;max-width:460px;box-shadow:0 24px 80px rgba(0,0,0,0.3);overflow:hidden;animation:modalIn .3s ease both;max-height:95vh;overflow-y:auto}
+.auth-modal{background:var(--white);border-radius:var(--rxl);width:100%;max-width:460px;box-shadow:0 24px 80px rgba(0,0,0,0.3);animation:modalIn .3s ease both;max-height:95vh;overflow-y:auto}
 @keyframes modalIn{from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:none}}
-.am-header{background:var(--ink);padding:2rem 2rem 1.5rem;position:relative}
+.am-header{background:var(--ink);padding:2rem 2rem 1.5rem;position:relative;border-radius:var(--rxl) var(--rxl) 0 0}
 .am-header-logo{display:flex;align-items:center;gap:9px;margin-bottom:1.25rem}
 .am-gem{width:32px;height:32px;background:var(--gold);border-radius:9px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:var(--ink)}
 .am-header h2{font-family:var(--serif);font-size:1.5rem;color:#fff;margin-bottom:.3rem}
@@ -366,7 +366,7 @@ footer{background:#070C18;padding:2.5rem clamp(1.5rem,5vw,3rem);border-top:1px s
 .or-divider::before,.or-divider::after{content:'';flex:1;height:1px;background:var(--bdr)}
 
 .btn-form-primary{width:100%;background:var(--teal);color:#fff;border:none;padding:13px;border-radius:var(--r);font-size:15px;font-weight:700;cursor:pointer;font-family:var(--font);transition:all .2s;margin-bottom:.6rem;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-form-primary:hover{background:var(--teal2);transform:translateY(-1px)}
+.btn-form-primary:hover{background:var(--teal2)}
 .btn-form-primary:disabled{background:#ccc;cursor:default;transform:none}
 .btn-form-google{width:100%;background:var(--white);color:var(--txt);border:1.5px solid var(--bdr2);padding:11px;border-radius:var(--r);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .btn-form-google:hover{border-color:var(--bdr3);background:var(--cream)}
@@ -1090,7 +1090,8 @@ async function doSignup() {
     if (data.session) {
       okEl.innerHTML = '✅ Account created! Redirecting to app…';
       okEl.classList.add('on');
-      setTimeout(() => { authReady = true; goToApp(data.user); }, 1200);
+      authReady = true;
+      setTimeout(() => goToApp(data.user), 1200);
     } else {
       // Email confirmation ON → ask them to check inbox
       okEl.innerHTML = '✅ Almost there! <strong>Check your email</strong> for a confirmation link.'
@@ -1120,14 +1121,17 @@ async function doSignin() {
 
   if (sb) {
     const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-    setLoading('si', false);
-    if (error) { errEl.textContent = error.message; errEl.classList.add('on'); return; }
-    goToApp(data.user);
+    if (error) {
+      setLoading('si', false);
+      errEl.textContent = '❌ ' + error.message;
+      errEl.classList.add('on');
+      return;
+    }
+    // Success — redirect immediately, no need to re-enable button
+    window.location.href = 'app.html';
   } else {
-    // Demo mode — redirect anyway so you can see the app
-    await new Promise(r => setTimeout(r, 800));
-    setLoading('si', false);
-    goToApp(null);
+    // Demo mode
+    window.location.href = 'app.html';
   }
 }
 
@@ -1145,11 +1149,14 @@ async function doGoogleAuth() {
 }
 
 function setLoading(prefix, on) {
-  document.getElementById(prefix+'Spin').style.display = on ? 'inline-block' : 'none';
-  document.getElementById(prefix+'BtnText').textContent = on
+  const spin = document.getElementById(prefix+'Spin');
+  const txt  = document.getElementById(prefix+'BtnText');
+  const btn  = document.querySelector(prefix==='su' ? '#formSignup .btn-form-primary' : '#formSignin .btn-form-primary');
+  if (spin) spin.style.display = on ? 'inline-block' : 'none';
+  if (txt)  txt.textContent = on
     ? (prefix==='su' ? 'Creating account…' : 'Signing in…')
     : (prefix==='su' ? 'Create account & start free' : 'Sign in');
-  document.querySelector(prefix==='su' ? '#formSignup .btn-form-primary' : '#formSignin .btn-form-primary').disabled = on;
+  if (btn)  btn.disabled = on;
 }
 
 // ── PRICING TOGGLE ───────────────────────────────────
