@@ -1062,6 +1062,7 @@ async function doSignup() {
       }
     });
     setLoading('su', false);
+    console.log('Supabase signup result:', JSON.stringify({data: data?.user?.id, error: error?.message}));
     if (error) { errEl.textContent = error.message; errEl.classList.add('on'); return; }
     // Create profile row in Supabase
     if (data?.user) {
